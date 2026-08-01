@@ -1,0 +1,7 @@
+{
+  "pack": {
+    "description": "shader stuff",
+    "min_format": [91, 0],
+    "max_format": [91, 0]
+  }
+}
