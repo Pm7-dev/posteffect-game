@@ -1,4 +1,7 @@
-#define MAP_SIZE 128.0
+
+
+#define MAP_SIZE 256
+#define MEMORY_PAGE_SIZE 512
 
 #define FOV 60 // degrees
 
