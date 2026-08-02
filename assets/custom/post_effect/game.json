@@ -1,30 +1,24 @@
 {
     "targets": {
         "data": {
-            "width": 1920,
-            "height": 2,
+            "width": 512,
+            "height": 512,
             "persistent": true
         },
         "data_swap": {
-            "width": 1920,
-			"height": 2,
+            "width": 512,
+			"height": 512,
             "persistent": true
         }
     },
     "passes": [
         {
             "vertex_shader": "minecraft:core/screenquad",
-            "fragment_shader": "custom:post/game/update",
+            "fragment_shader": "custom:post/game/input",
             "inputs": [
                 {
                     "sampler_name": "Data",
                     "target": "data"
-                },
-                {
-                    "sampler_name": "Map",
-                    "location": "custom:game/map",
-                    "width": 128,
-                    "height": 128
                 },
                 {
                     "sampler_name": "Minecraft",
@@ -35,22 +29,87 @@
         },
         {
             "vertex_shader": "minecraft:core/screenquad",
-            "fragment_shader": "minecraft:post/blit",
+            "fragment_shader": "custom:post/util/shortblit",
+            "inputs": [{"sampler_name": "In","target": "data_swap"}],
+            "output": "data"
+        },
+
+
+
+
+
+        {
+            "vertex_shader": "minecraft:core/screenquad",
+            "fragment_shader": "custom:post/game/update_map",
             "inputs": [
                 {
-                    "sampler_name": "In",
-                    "target": "data_swap"
+                    "sampler_name": "Data",
+                    "target": "data"
+                },
+                {
+                    "sampler_name": "Map",
+                    "location": "custom:game/map",
+                    "width": 256,
+                    "height": 256
+                }
+
+            ],
+            "output": "data_swap"
+        },
+        {
+            "vertex_shader": "minecraft:core/screenquad",
+            "fragment_shader": "custom:post/util/shortblit",
+            "inputs": [{"sampler_name": "In","target": "data_swap"}],
+            "output": "data"
+        },
+
+
+
+
+
+        {
+            "vertex_shader": "minecraft:core/screenquad",
+            "fragment_shader": "custom:post/game/update_player",
+            "inputs": [
+                {
+                    "sampler_name": "Data",
+                    "target": "data"
+                },
+                {
+                    "sampler_name": "Map",
+                    "location": "custom:game/map",
+                    "width": 256,
+                    "height": 256
                 }
             ],
-            "uniforms": {
-                "BlitConfig": [
-                    {
-                        "name": "ColorModulate",
-                        "type": "vec4",
-                        "value": [ 1.0, 1.0, 1.0, 1.0 ]
-                    }
-                ]
-            },
+            "output": "data_swap"
+        },
+        {
+            "vertex_shader": "minecraft:core/screenquad",
+            "fragment_shader": "custom:post/util/shortblit",
+            "inputs": [{"sampler_name": "In","target": "data_swap"}],
+            "output": "data"
+        },
+
+
+
+
+
+        {
+            "vertex_shader": "minecraft:core/screenquad",
+            "fragment_shader": "custom:post/game/send_raycasts",
+            "inputs": [
+                {
+                    "sampler_name": "Data",
+                    "target": "data"
+                }
+            ],
+            "output": "data_swap"
+        },
+        {
+            "vertex_shader": "minecraft:core/screenquad",
+            "fragment_shader": "custom:post/util/shortblit",
+            "inputs": [{"sampler_name": "In","target": "data_swap"}],
             "output": "data"
         },
 
@@ -61,7 +120,7 @@
 
         {
             "vertex_shader": "minecraft:core/screenquad",
-            "fragment_shader": "custom:post/game/render",
+            "fragment_shader": "custom:post/game/render_map",
             "inputs": [
                 {
                     "sampler_name": "Data",
