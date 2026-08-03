@@ -12,7 +12,7 @@ in vec2 texCoord;
 out vec4 fragColor;
 
 void main(){
-    float lastGameTime = getData(DataSampler, GAME_META_ROW, LAST_GAME_TIME_INDEX);
+    float lastGameTime = decodeFloat(getData(DataSampler, GAME_META_ROW, LAST_GAME_TIME_INDEX));
     float delta = GameTime - lastGameTime; // Change in GameTime since the last frame update
     if(delta < 0) delta += 1.0; // if GameTime loops back to 0, prevent the animation from going back.
     float deltaTime = delta * 1200.0; // 1 GameTime is 20 minutes, which is 1200 seconds
@@ -24,36 +24,45 @@ void main(){
         return;
     }
 
-    int initialized = decodeFloat(getData(DataSampler, GAME_META_ROW, GAME_INITIALIZED_INDEX));
-    if(!initialized) {
+    int initialized = int(decodeFloat(getData(DataSampler, GAME_META_ROW, GAME_INITIALIZED_INDEX)));
+    if(initialized != 1.0) {
         if(dataCoord.x == PLAYER_X_INDEX || dataCoord.x == PLAYER_Y_INDEX) {
-            bool found = false;
-            int row = 0;
-            int column = 0;
-            for(; row<MAP_SIZE; row++) {
-                for(; column<MAP_SIZE; column++) {
-                    vec4 color = getMapData(MapSampler, row, column);
-                    if(color == vec4(1.0, 1.0, 1.0, 1.0)) {
-                        found = true;
-                    }
-                }
-            }
-            if(found) {
-                vec2 pos = (column + 0.5, row + 0.5);
-                if(dataCoord.x == PLAYER_X_INDEX) {
-                    fragColor = encodeFloat(pos.x);
-                } else {
-                    fragColor = encodeFloat(pos.y);
-                }
-            } else {
+
+            //TODO: THIS IS BROKEN... FIX THIS
+            // bool found = false;
+            // int row = 0;
+            // int column = 0;
+            // for(row=0; row<MAP_SIZE; row++) {
+            //     for(column=0; column<MAP_SIZE; column++) {
+            //         vec4 color = getMapData(MapSampler, row, column);
+            //         if(color == vec4(1.0, 1.0, 1.0, 1.0)) {
+            //             found = true;
+            //         }
+            //     }
+            // }
+            // if(found) {
+            //     vec2 pos = vec2(column + 0.5, row + 0.5);
+            //     if(dataCoord.x == PLAYER_X_INDEX) {
+            //         fragColor = encodeFloat(pos.x);
+            //     } else {
+            //         fragColor = encodeFloat(pos.y);
+            //     }
+            // } else {
                 if(dataCoord.x == PLAYER_X_INDEX) {
                     fragColor = encodeFloat((MAP_SIZE/2.0) + 0.5);
                 } else {
                     fragColor = encodeFloat((MAP_SIZE/2.0) + 0.5);
                 }
-            }
-            
+            // }
+
+            return;
         }
+
+        if(dataCoord.x == PLAYER_DIRECTION_INDEX) {
+            fragColor = encodeFloat(0.523599); // 30 degrees in radians
+            return;
+        }
+
     }
 
 

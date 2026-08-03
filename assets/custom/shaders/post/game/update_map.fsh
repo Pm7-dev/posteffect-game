@@ -20,7 +20,7 @@ void main(){
         return;
     }
 
-    int initialized = decodeFloat(getData(DataSampler, GAME_META_ROW, GAME_INITIALIZED_INDEX));
+    int initialized = int(decodeFloat(getData(DataSampler, GAME_META_ROW, GAME_INITIALIZED_INDEX)));
 
     if(dataCoord.y == PLAYER_DATA_ROW) {
         // TODO: also check for door & key here so you can remove the key from the player inventory.
