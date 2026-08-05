@@ -19,7 +19,7 @@ void main(){
     }
 
     int realRow = (dataCoord.y-RAYCAST_ROW) / 4;
-    int realIndex = (((dataCoord.y-RAYCAST_ROW)%4)-1) * MEMORY_PAGE_SIZE + dataCoord.x;
+    int realIndex = (((dataCoord.y-RAYCAST_ROW)%4)) * MEMORY_PAGE_SIZE + dataCoord.x;
 
     if(realRow < 0 || realRow > 2) {
         fragColor = texture(DataSampler, texCoord);

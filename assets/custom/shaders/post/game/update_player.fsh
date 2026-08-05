@@ -59,7 +59,7 @@ void main(){
         }
 
         if(dataCoord.x == PLAYER_DIRECTION_INDEX) {
-            fragColor = encodeFloat(0.523599); // 30 degrees in radians
+            fragColor = encodeFloat(0.0); // 30 degrees in radians
             return;
         }
 

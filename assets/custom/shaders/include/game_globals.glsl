@@ -5,7 +5,7 @@
 
 #define SCREEN_WIDTH 1920.0
 
-#define FOV 60 // degrees
+#define FOV 60.0 // degrees
 
 #define MOVE_SPEED 5.0 // meters/second
 #define ROT_SPEED 90.0 // degrees/second
