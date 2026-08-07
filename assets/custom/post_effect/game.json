@@ -121,6 +121,12 @@
                 {
                     "sampler_name": "Data",
                     "target": "data"
+                },
+                {
+                    "sampler_name": "Wall",
+                    "location": "custom:game/wall_atlas",
+                    "width": 128,
+                    "height": 128
                 }
             ],
             "output": "minecraft:main"
