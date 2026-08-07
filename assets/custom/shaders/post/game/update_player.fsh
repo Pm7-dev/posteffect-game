@@ -16,6 +16,7 @@ void main(){
     float delta = GameTime - lastGameTime; // Change in GameTime since the last frame update
     if(delta < 0) delta += 1.0; // if GameTime loops back to 0, prevent the animation from going back.
     float deltaTime = delta * 1200.0; // 1 GameTime is 20 minutes, which is 1200 seconds
+    if(deltaTime > 0.15) deltaTime = 0.15; // Cap deltaTime to prevent large jumps in time
 
     ivec2 dataCoord = getDataCoords(texCoord);
 
