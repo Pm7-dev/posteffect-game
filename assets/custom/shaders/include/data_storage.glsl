@@ -2,7 +2,6 @@
 
 #moj_import <custom:game_globals.glsl>
 
-
 // Data Storage Layout for rows and idexes.
 #define GAME_META_ROW 0 // One row for game metadata 
 #define GAME_INITIALIZED_INDEX 0

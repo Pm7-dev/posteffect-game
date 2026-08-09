@@ -3,6 +3,7 @@
 #moj_import <minecraft:globals.glsl>
 #moj_import <custom:data_storage.glsl>
 #moj_import <custom:game_globals.glsl>
+#moj_import <custom:raycast.glsl>
 
 uniform sampler2D DataSampler;
 
@@ -34,58 +35,60 @@ void main(){
         decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_X_INDEX)), 
         decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX))
     );
-    vec2 pos = originalPos;
-    ivec2 mapPos = ivec2(int(pos.x), int(pos.y));
-    vec2 rotVec = vec2(cos(rot), sin(rot));
-    ivec2 stepDir = ivec2(sign(rotVec.x), sign(rotVec.y));
-    vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
-    float eps = 1e-6;
-    while (abs(pos.x-originalPos.x) < MAX_SIGHT && abs(pos.y-originalPos.y) < MAX_SIGHT) {
-        vec2 distToNext = vec2(0.0, 0.0);
-        float denomX = max(abs(rotVec.x), eps);
-        float denomY = max(abs(rotVec.y), eps);
+    struct raycast ray = sendRay(originalPos, rot, DataSampler, MAX_SIGHT);
 
-        if(stepDir.x > 0) {
-            distToNext.x = mapPos.x + 1 - pos.x;
-        } else {
-            distToNext.x = pos.x - mapPos.x;
-        }
-        if(stepDir.y > 0) {
-            distToNext.y = mapPos.y + 1 - pos.y;
-        } else {
-            distToNext.y = pos.y - mapPos.y;
-        }
+    // vec2 pos = originalPos;
+    // ivec2 mapPos = ivec2(int(pos.x), int(pos.y));
+    // vec2 rotVec = vec2(cos(rot), sin(rot));
+    // ivec2 stepDir = ivec2(sign(rotVec.x), sign(rotVec.y));
+    // vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
+    // float eps = 1e-6;
+    // while (abs(pos.x-originalPos.x) < MAX_SIGHT && abs(pos.y-originalPos.y) < MAX_SIGHT) {
+    //     vec2 distToNext = vec2(0.0, 0.0);
+    //     float denomX = max(abs(rotVec.x), eps);
+    //     float denomY = max(abs(rotVec.y), eps);
 
-        if(distToNext.x / denomX < distToNext.y / denomY) {
-            float t = distToNext.x / denomX;
-            pos += rotVec * t;
-            mapPos.x += stepDir.x;
-        } else {
-            float t = distToNext.y / denomY;
-            pos += rotVec * t;
-            mapPos.y += stepDir.y;
-        }
+    //     if(stepDir.x > 0) {
+    //         distToNext.x = mapPos.x + 1 - pos.x;
+    //     } else {
+    //         distToNext.x = pos.x - mapPos.x;
+    //     }
+    //     if(stepDir.y > 0) {
+    //         distToNext.y = mapPos.y + 1 - pos.y;
+    //     } else {
+    //         distToNext.y = pos.y - mapPos.y;
+    //     }
 
-        if(mapPos.x < 0 || mapPos.x >= MAP_SIZE || mapPos.y < 0 || mapPos.y >= MAP_SIZE) {
-            color = vec4(1.0, 0.0, 0.0, 1.0); /// something is SOOOOOO borkey here.
-            break;
-        }
+    //     if(distToNext.x / denomX < distToNext.y / denomY) {
+    //         float t = distToNext.x / denomX;
+    //         pos += rotVec * t;
+    //         mapPos.x += stepDir.x;
+    //     } else {
+    //         float t = distToNext.y / denomY;
+    //         pos += rotVec * t;
+    //         mapPos.y += stepDir.y;
+    //     }
 
-        ivec2 translated = translateMapCoordToDataCoord(mapPos);
-        color = getData(DataSampler, translated.y, translated.x);
-        ivec4 icolor = getIntegerColor(color);
-        if(icolor.a == WALL_DOOR.a) { // hit a wall or door
-            break;
-        }
-    }
+    //     if(mapPos.x < 0 || mapPos.x >= MAP_SIZE || mapPos.y < 0 || mapPos.y >= MAP_SIZE) {
+    //         color = vec4(1.0, 0.0, 0.0, 1.0); /// something is SOOOOOO borkey here.
+    //         break;
+    //     }
+
+    //     ivec2 translated = translateMapCoordToDataCoord(mapPos);
+    //     color = getData(DataSampler, translated.y, translated.x);
+    //     ivec4 icolor = getIntegerColor(color);
+    //     if(icolor.a == WALL_DOOR.a) { // hit a wall or door
+    //         break;
+    //     }
+    // }
 
     
     if(realRow == 0) { // Store color of hit wall
-        fragColor = color;
+        fragColor = ray.color;
         //fragColor = vec4(1.0, 1.0, 1.0, 1.0);
     } else if(realRow == 1) { // Store x of hit wall
-        fragColor = encodeFloat(pos.x);
+        fragColor = encodeFloat(ray.position.x);
     } else { // Store y of hit wall
-        fragColor = encodeFloat(pos.y);
+        fragColor = encodeFloat(ray.position.y);
     }
 }
