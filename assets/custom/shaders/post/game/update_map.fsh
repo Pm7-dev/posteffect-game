@@ -44,12 +44,5 @@ void main(){
         //TODO: if color is door, if action is pressed, if inventory has key, set sampler to zero
 
         return;
-    } else {
-        vec4 color = getMapData(MapSampler, index);
-        if(color == vec4(1.0, 1.0, 1.0, 1.0)) {
-            fragColor = vec4(0.0, 0.0, 0.0, 0.0);
-        } else {
-            fragColor = color;
-        }
-    }
+    } 
 }

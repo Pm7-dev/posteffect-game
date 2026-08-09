@@ -3,19 +3,12 @@
 #moj_import <custom:game_globals.glsl>
 
 
-
-
-// One row for game metadata 
-#define GAME_META_ROW 0
-
+// Data Storage Layout for rows and idexes.
+#define GAME_META_ROW 0 // One row for game metadata 
 #define GAME_INITIALIZED_INDEX 0
 #define LAST_GAME_TIME_INDEX 1
 
-
-
-// One row for player data (inputs, position, and inventory)
-#define PLAYER_DATA_ROW 1
-
+#define PLAYER_DATA_ROW 1 // One row for player data (inputs, position, and inventory)
 #define MOVEMENT_INDEX 0
 #define ROTATION_INDEX 1
 #define ACTION_INDEX 2 // jump?
@@ -26,23 +19,28 @@
 #define PLAYER_HEALTH_INDEX 7 //may go unused
 #define INVENTORY_INDEX 8 // and beyond
 
+#define MAP_DATA_ROW 2 // 128 rows for storing the map data
 
+#define KEY_ROW 130 // 2 rows for storing item pickup locations (color [vec4] and mapCoord [ivec2])
 
-// 128 rows for storing the map data
-#define MAP_DATA_ROW 2
+#define RAYCAST_ROW 132 // 12 rows for storing raycast hit locations (x [float], y [float], and color [vec4])
 
-// 2 rows for storing item pickup locations (color [vec4] and mapCoord [ivec2])
-#define KEY_ROW 130
-
-// 12 rows for storing raycast hit locations (x [float], y [float], and color [vec4])
-#define RAYCAST_ROW 132
-
-// 4 rows for storing enemy information (type [float], x [float], y [float], health [float], )
-#define ENEMY_ROW 144
+#define ENEMY_ROW 144 // 4 rows for storing enemy information (type [float], x [float], y [float], health [float], )
 
 
 
-
+// Specific colors for interpretation by map storage. 
+#define PLAYER_SPAWN ivec4(0, 0, 0, 200)
+#define WALL_BRICK ivec4(127, 42, 33, 255)
+#define WALL_WOOD ivec4(85, 35, 17, 255)
+#define WALL_STONE ivec4(134, 136, 136, 255)
+#define WALL_DIRT ivec4(107, 76, 62, 255)
+#define WALL_DOOR ivec4(0, 0, 0, 255) // Anything else with this opacity will be seen as a door.
+// Anything with opacity 150 will be seen as a key.
+//TODO: enemy types
+ivec4 getIntegerColor(vec4 color) { // returns a color as an ivec4 with range 0-255
+    return ivec4(int(color.r*255.0), int(color.g*255.0), int(color.b*255.0), int(color.a*255.0));
+}
 
 
 // Splits a 32-bit integer into a vec4 of four floats.
@@ -138,7 +136,6 @@ ivec2 translateDataCoordToMapCoord(ivec2 dataCoord) {
 }
 
 
-
 vec4 getMapData(sampler2D MapSampler, int row, int column) {
     return texture(MapSampler, vec2(float(column)/MAP_SIZE, float(row)/MAP_SIZE));
 }
@@ -147,5 +144,3 @@ vec4 getMapData(sampler2D MapSampler, int index) {
     int column = index%MAP_SIZE;
     return getMapData(MapSampler, row, column);
 }
-
-

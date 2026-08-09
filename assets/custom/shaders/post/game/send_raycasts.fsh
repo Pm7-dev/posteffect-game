@@ -73,7 +73,8 @@ void main(){
 
         ivec2 translated = translateMapCoordToDataCoord(mapPos);
         color = getData(DataSampler, translated.y, translated.x);
-        if(color.a > 0.5) {
+        ivec4 icolor = getIntegerColor(color);
+        if(icolor.a == WALL_DOOR.a) { // hit a wall or door
             break;
         }
     }

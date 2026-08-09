@@ -11,20 +11,35 @@ in vec2 texCoord;
 out vec4 fragColor;
 
 vec2 getTextureOffset(vec4 mapColor) {
-    return vec2(0.0, 0.0); // TODO: change later
+    ivec4 icolor = getIntegerColor(mapColor);
+    if(icolor == WALL_BRICK) {
+        return vec2(0.0, 0.0);
+    } else if(icolor == WALL_WOOD) {
+        return vec2(0.25, 0.0);
+    } else if(icolor == WALL_STONE) {
+        return vec2(0.5, 0.0);
+    } else if(icolor == WALL_DIRT) {
+        return vec2(0.75, 0.0);
+    }
+    return vec2(0.75, 0.75);
 }
 
-float getTextureX(vec4 color, float xPos, float yPos) {
-    xPos = fract(xPos);
-    yPos = fract(yPos);
-    float progress = 0.0;
-    if(xPos > yPos) {
-        progress = xPos;
-    } else {
-        progress = yPos;
-    }
+// gleefully stolen from someone smarter than me
+vec3 rgb2hsv(vec3 c)
+{
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
 
-    return progress * 0.25; // TODO: change later
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+vec3 hsv2rgb(vec3 c)
+{
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
 void main(){
@@ -56,6 +71,12 @@ void main(){
     float textureY = (0.25*(((1.0-texCoord.y)-0.5)/wallHeight + 0.5)) + textureOffset.y;
 
     vec4 color = texture(WallSampler, vec2(textureX, textureY));
+    if(textureOffset == vec2(0.75, 0.75)) {
+        color.rgb = rgb2hsv(color.rgb);
+        mapColor.rgb = rgb2hsv(mapColor.rgb);
+        color.r = mapColor.r;
+        color.rgb = hsv2rgb(color.rgb);
+    }
 
     // Cut off ends of walls
          // This fixes a fish-eye effect
