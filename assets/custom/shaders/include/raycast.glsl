@@ -17,7 +17,7 @@ raycast sendRay(vec2 origin, float rotation, sampler2D DataSampler, float maxSig
     vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
     float eps = 1e-6;
     bool hit = false;
-    while (abs(pos.x-origin.x) < maxSight && abs(pos.y-origin.y) < maxSight) {
+    while (true) { // scary
         vec2 distToNext = vec2(0.0, 0.0);
         float denomX = max(abs(rotVec.x), eps);
         float denomY = max(abs(rotVec.y), eps);
@@ -44,7 +44,13 @@ raycast sendRay(vec2 origin, float rotation, sampler2D DataSampler, float maxSig
         }
 
         if(mapPos.x < 0 || mapPos.x >= MAP_SIZE || mapPos.y < 0 || mapPos.y >= MAP_SIZE) {
-            color = vec4(1.0, 0.0, 0.0, 1.0); /// something is SOOOOOO borkey here.
+            hit = false;
+            color = vec4(0.0, 0.0, 0.0, 0.0);
+            break;
+        }
+
+        // If the distance from the origin to the current position exceeds maxSight, break the loop before updating wall hits.
+        if(distance(pos, origin) > maxSight) {
             break;
         }
 

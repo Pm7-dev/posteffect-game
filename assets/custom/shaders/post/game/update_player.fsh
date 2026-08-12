@@ -3,6 +3,7 @@
 #moj_import <minecraft:globals.glsl>
 #moj_import <custom:data_storage.glsl>
 #moj_import <custom:game_globals.glsl>
+#moj_import <custom:raycast.glsl>
 
 uniform sampler2D DataSampler;
 uniform sampler2D MapSampler;
@@ -90,22 +91,37 @@ void main(){
     }
 
 
+
+    float rot = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_DIRECTION_INDEX));
+    float x = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_X_INDEX));
+    float y = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX));
+    float movementInput = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, MOVEMENT_INDEX));
+
     if(dataCoord.x == PLAYER_X_INDEX) {
-        float rot = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_DIRECTION_INDEX));
-        float x = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_X_INDEX));
-        x += MOVE_SPEED * deltaTime * decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, MOVEMENT_INDEX)) * cos(rot);
+        float movement = MOVE_SPEED * deltaTime * movementInput * cos(rot);
+        float raycastRot = sign(movement) > 0.0 ? 0.0 : PI;
+        struct raycast ray = sendRay(vec2(x, y), raycastRot, DataSampler, abs(movement));
+        if(ray.hit) {
+            x = ray.position.x - (0.01 * sign(movement));
+        } else {
+            x += movement;
+        }
         fragColor = encodeFloat(x);
         return;
     }
     if(dataCoord.x == PLAYER_Y_INDEX) {
-        float rot = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_DIRECTION_INDEX));
-        float y = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX));
-        y += MOVE_SPEED * deltaTime * decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, MOVEMENT_INDEX)) * sin(rot);
+        float movement = MOVE_SPEED * deltaTime * movementInput * sin(rot);
+        float raycastRot = sign(movement) > 0.0 ? PI/2.0 : 3*PI/2.0;
+        struct raycast ray = sendRay(vec2(x, y), raycastRot, DataSampler, abs(movement));
+        if(ray.hit) {
+            y = ray.position.y - (0.01 * sign(movement));
+        } else {
+            y += movement;
+        }
         fragColor = encodeFloat(y);
         return;
     }
     if(dataCoord.x == PLAYER_DIRECTION_INDEX) {
-        float rot = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_DIRECTION_INDEX));
         rot += decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, ROTATION_INDEX)) * radians(ROT_SPEED) * deltaTime;
         rot = mod(rot, 2*PI);
         fragColor = encodeFloat(rot);
