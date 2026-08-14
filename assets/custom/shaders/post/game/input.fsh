@@ -21,11 +21,11 @@ void main() {
 
     //TODO: It'll be easier to just split this into three text displays :3
     // Gather player input from Minecraft
-    vec4 minecraftInput = texture(MinecraftSampler, vec2(0.5, 0.5)); // get color at the middle of the screen
     if(dataCoord.x == MOVEMENT_INDEX) { // movement comes from the red channel
-        if(minecraftInput.r > 0.75) {
+        vec4 minecraftInput = texture(MinecraftSampler, vec2(0.0, 0.5)); // get color at the middle of the screen
+        if(minecraftInput.r > 0.9) {
             fragColor = encodeFloat(1.0);
-        } else if(minecraftInput.r < 0.25) {
+        } else if(minecraftInput.r < 0.1) {
             fragColor = encodeFloat(-1.0);
         } else {
             fragColor = encodeFloat(0.0);
@@ -33,9 +33,10 @@ void main() {
         return;
     }
     if(dataCoord.x == ROTATION_INDEX) { // turn comes from the green channel
-        if(minecraftInput.g > 0.75) {
+        vec4 minecraftInput = texture(MinecraftSampler, vec2(0.5, 0.5)); // get color at the middle of the screen
+        if(minecraftInput.r > 0.9) {
             fragColor = encodeFloat(1.0);
-        } else if(minecraftInput.g < 0.25) {
+        } else if(minecraftInput.r < 0.1) {
             fragColor = encodeFloat(-1.0);
         } else {
             fragColor = encodeFloat(0.0);
@@ -43,7 +44,8 @@ void main() {
         return;
     }
     if(dataCoord.x == ACTION_INDEX) { // action comes from the blue channel (jump input?)
-        if(minecraftInput.b > 0.5) {
+        vec4 minecraftInput = texture(MinecraftSampler, vec2(1.0, 0.5)); // get color at the middle of the screen
+        if(minecraftInput.r > 0.9) {
             fragColor = encodeFloat(1.0);
         } else {
             fragColor = encodeFloat(0.0);

@@ -28,7 +28,7 @@ void main(){
     }
 
     // If the pixel is in the second row, it is there to store a wall distance, so send a ray in the pixel's direction to get the distance to wall.
-    float rotOffset = -((float(realIndex)/float(SCREEN_WIDTH) - 0.5) * radians(FOV));
+    float rotOffset = ((float(realIndex)/float(SCREEN_WIDTH) - 0.5) * radians(FOV));
     float rot = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_DIRECTION_INDEX)) + rotOffset;
     vec2 originalPos = vec2(
         decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_X_INDEX)), 

@@ -15,3 +15,5 @@
 
 #define PI 3.14159265
 
+#define HITBOX_RADIUS 0.2 // meters
+

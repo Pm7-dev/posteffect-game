@@ -68,7 +68,7 @@ void main(){
                 if(dataCoord.x == PLAYER_X_INDEX) {
                     fragColor = encodeFloat(float(foundX) + 0.5);
                 } else {
-                    fragColor = encodeFloat(float(foundY+2) + 0.5);
+                    fragColor = encodeFloat(float(foundY+2) + 0.5); // genuinely no clue why this must be +2 and that's scary
                 }
             } else {
                 // fallback to center of the map if nothing found or search capped
@@ -99,10 +99,15 @@ void main(){
 
     if(dataCoord.x == PLAYER_X_INDEX) {
         float movement = MOVE_SPEED * deltaTime * movementInput * cos(rot);
-        float raycastRot = sign(movement) > 0.0 ? 0.0 : PI;
-        struct raycast ray = sendRay(vec2(x, y), raycastRot, DataSampler, abs(movement));
-        if(ray.hit) {
-            x = ray.position.x - (0.01 * sign(movement));
+        float collisionCheck = movement + ((HITBOX_RADIUS*1.1) * sign(movement));
+        ivec2 hitCoord = translateMapCoordToDataCoord(ivec2(int(x + collisionCheck), int(y)));
+        ivec4 color = getIntegerColor(getData(DataSampler, hitCoord.y, hitCoord.x));
+        if(color.a == WALL_DOOR.a) {
+            if(sign(movement) > 0.0) {
+                x = int(x) + 1.0 - HITBOX_RADIUS;
+            } else {
+                x = int(x) + HITBOX_RADIUS;
+            }
         } else {
             x += movement;
         }
@@ -111,10 +116,15 @@ void main(){
     }
     if(dataCoord.x == PLAYER_Y_INDEX) {
         float movement = MOVE_SPEED * deltaTime * movementInput * sin(rot);
-        float raycastRot = sign(movement) > 0.0 ? PI/2.0 : 3*PI/2.0;
-        struct raycast ray = sendRay(vec2(x, y), raycastRot, DataSampler, abs(movement));
-        if(ray.hit) {
-            y = ray.position.y - (0.01 * sign(movement));
+        float collisionCheck = movement + ((HITBOX_RADIUS*1.1) * sign(movement));
+        ivec2 hitCoord = translateMapCoordToDataCoord(ivec2(int(x), int(y+collisionCheck)));
+        ivec4 color = getIntegerColor(getData(DataSampler, hitCoord.y, hitCoord.x));
+        if(color.a == WALL_DOOR.a) {
+            if(sign(movement) > 0.0) {
+                y = int(y) + 1.0 - HITBOX_RADIUS;
+            } else {
+                y = int(y) + HITBOX_RADIUS;
+            }
         } else {
             y += movement;
         }
