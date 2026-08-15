@@ -41,6 +41,15 @@
 ivec4 getIntegerColor(vec4 color) { // returns a color as an ivec4 with range 0-255
     return ivec4(int(color.r*255.0), int(color.g*255.0), int(color.b*255.0), int(color.a*255.0));
 }
+bool isDoor(ivec4 color) {
+    if(color.a == WALL_DOOR.a) {
+        if(color == WALL_BRICK || color == WALL_WOOD || color == WALL_STONE || color == WALL_DIRT) {
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
 
 
 // Splits a 32-bit integer into a vec4 of four floats.

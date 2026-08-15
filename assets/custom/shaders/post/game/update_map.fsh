@@ -52,12 +52,14 @@ void main(){
 
         float actionInput = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, ACTION_INDEX));
         if(actionInput > 0.5) {
-            // Remove the block from the map
-            fragColor = vec4(0.0, 0.0, 0.0, 0.0);
-        } else {
-            fragColor = texture(DataSampler, texCoord);
+            vec4 color = texture(DataSampler, texCoord);
+            ivec4 icolor = getIntegerColor(color);
+            if(isDoor(icolor)) {
+                fragColor = vec4(0.0, 0.0, 0.0, 0.0);
+                return;
+            }
         }
-
+        fragColor = texture(DataSampler, texCoord);
         return;
     } 
 }

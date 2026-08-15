@@ -11,7 +11,7 @@
 #define ROT_SPEED 180.0 // degrees/second
 
 #define MAX_SIGHT 12 // meters
-#define REACH 1.5 // meters
+#define REACH 2.25 // meters
 
 #define PI 3.14159265
 
