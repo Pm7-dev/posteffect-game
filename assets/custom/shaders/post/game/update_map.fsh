@@ -35,13 +35,28 @@ void main(){
 
     int index = getIndex(texCoord) - MAP_DATA_ROW * MEMORY_PAGE_SIZE;
     if(initialized == 1.0) {
-        fragColor = texture(DataSampler, texCoord);
 
-        ivec2 playerFacing = decodeMapCoordinate(getData(DataSampler, PLAYER_DATA_ROW, COORDS_FACING_INDEX));
+        // Return if no block targeted
+        if(decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, LOOKING_AT_WALL_INDEX)) < 0.5) {
+            fragColor = texture(DataSampler, texCoord);
+            return;
+        }
+
+        // Make sure this index is the faced block
+        ivec2 playerFacing = decodeMapCoord(getData(DataSampler, PLAYER_DATA_ROW, COORDS_FACING_INDEX));
         ivec2 translated = translateMapCoordToDataCoord(playerFacing);
-        vec4 color = getData(DataSampler, translated.y, translated.x);
+        if(getDataCoords(texCoord) != translated) {
+            fragColor = texture(DataSampler, texCoord);
+            return;
+        }
 
-        //TODO: if color is door, if action is pressed, if inventory has key, set sampler to zero
+        float actionInput = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, ACTION_INDEX));
+        if(actionInput > 0.5) {
+            // Remove the block from the map
+            fragColor = vec4(0.0, 0.0, 0.0, 0.0);
+        } else {
+            fragColor = texture(DataSampler, texCoord);
+        }
 
         return;
     } 

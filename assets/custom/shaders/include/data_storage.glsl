@@ -15,8 +15,9 @@
 #define PLAYER_Y_INDEX 4
 #define PLAYER_DIRECTION_INDEX 5
 #define COORDS_FACING_INDEX 6 // use the map coordinate thing
-#define PLAYER_HEALTH_INDEX 7 //may go unused
-#define INVENTORY_INDEX 8 // and beyond
+#define LOOKING_AT_WALL_INDEX 7 // either 1.0 or 0.0
+#define PLAYER_HEALTH_INDEX 8 //may go unused
+#define INVENTORY_INDEX 9 // and beyond
 
 #define MAP_DATA_ROW 2 // 128 rows for storing the map data
 
@@ -80,15 +81,17 @@ float decodeFloat(vec4 rgba) {
 }
 
 // Encodes an ivec2 into four float rgba values
-vec4 encodeMapCoordinate(ivec2 coord) {
-    int bits = coord.x & 0xFFFF;
+vec4 encodeMapCoord(ivec2 coord) {
+    int x = int(coord.x);
+    int y = int(coord.y);
+    int bits = x & 0xFFFF;
     bits <<= 16;
-    bits |= (coord.y & 0xFFFF);
+    bits |= (y & 0xFFFF);
     return splitToRGBA(bits);
 }
 
 // Decodes an ivec2 from four float rgba values.
-ivec2 decodeMapCoordinate(vec4 rgba) {
+ivec2 decodeMapCoord(vec4 rgba) {
     int bits = combineToBits(rgba);
     int y = bits & 0xFFFF;
     int x = (bits >> 16) & 0xFFFF;

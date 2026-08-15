@@ -11,7 +11,7 @@
 #define ROT_SPEED 180.0 // degrees/second
 
 #define MAX_SIGHT 12 // meters
-#define MIN_WALL_THICKNESS 0.1 // meters
+#define REACH 1.5 // meters
 
 #define PI 3.14159265
 

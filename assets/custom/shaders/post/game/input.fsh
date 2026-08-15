@@ -3,6 +3,7 @@
 #moj_import <minecraft:globals.glsl>
 #moj_import <custom:data_storage.glsl>
 #moj_import <custom:game_globals.glsl>
+#moj_import <custom:raycast.glsl>
 
 uniform sampler2D DataSampler;
 uniform sampler2D MinecraftSampler;
@@ -22,7 +23,7 @@ void main() {
     //TODO: It'll be easier to just split this into three text displays :3
     // Gather player input from Minecraft
     if(dataCoord.x == MOVEMENT_INDEX) { // movement comes from the red channel
-        vec4 minecraftInput = texture(MinecraftSampler, vec2(0.0, 0.5)); // get color at the middle of the screen
+        vec4 minecraftInput = texture(MinecraftSampler, vec2(0.0, 0.3)); // get color at the middle of the screen
         if(minecraftInput.r > 0.9) {
             fragColor = encodeFloat(1.0);
         } else if(minecraftInput.r < 0.1) {
@@ -33,7 +34,7 @@ void main() {
         return;
     }
     if(dataCoord.x == ROTATION_INDEX) { // turn comes from the green channel
-        vec4 minecraftInput = texture(MinecraftSampler, vec2(0.5, 0.5)); // get color at the middle of the screen
+        vec4 minecraftInput = texture(MinecraftSampler, vec2(0.5, 0.3)); // get color at the middle of the screen
         if(minecraftInput.r > 0.9) {
             fragColor = encodeFloat(1.0);
         } else if(minecraftInput.r < 0.1) {
@@ -44,8 +45,38 @@ void main() {
         return;
     }
     if(dataCoord.x == ACTION_INDEX) { // action comes from the blue channel (jump input?)
-        vec4 minecraftInput = texture(MinecraftSampler, vec2(1.0, 0.5)); // get color at the middle of the screen
+        vec4 minecraftInput = texture(MinecraftSampler, vec2(1.0, 0.3)); // get color at the middle of the screen
         if(minecraftInput.r > 0.9) {
+            fragColor = encodeFloat(1.0);
+        } else {
+            fragColor = encodeFloat(0.0);
+        }
+        return;
+    }
+    if(dataCoord.x == COORDS_FACING_INDEX) {
+        float rot = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_DIRECTION_INDEX));
+        vec2 pos = vec2(
+            decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_X_INDEX)), 
+            decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX))
+        );
+
+        struct raycast ray = sendRay(pos, rot, DataSampler, REACH);
+        if(ray.hit) {
+            fragColor = encodeMapCoord(ray.mapPosition);
+        } else {
+            fragColor = encodeMapCoord(ivec2(0, 0));
+        }
+        return;
+    }
+    if(dataCoord.x == LOOKING_AT_WALL_INDEX) {
+        float rot = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_DIRECTION_INDEX));
+        vec2 pos = vec2(
+            decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_X_INDEX)), 
+            decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX))
+        );
+
+        struct raycast ray = sendRay(pos, rot, DataSampler, REACH);
+        if(ray.hit) {
             fragColor = encodeFloat(1.0);
         } else {
             fragColor = encodeFloat(0.0);

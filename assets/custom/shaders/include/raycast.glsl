@@ -2,21 +2,26 @@
 
 #moj_import <custom:game_globals.glsl>
 
+
 struct raycast {
     bool hit;
     vec2 position;
+    ivec2 mapPosition;
     vec4 color;
 };
 
-
 raycast sendRay(vec2 origin, float rotation, sampler2D DataSampler, float maxSight) {
+    float eps = 1e-6;
+    
+    vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
+    bool hit = false;
     vec2 pos = origin;
+
     ivec2 mapPos = ivec2(int(pos.x), int(pos.y));
     vec2 rotVec = vec2(cos(rotation), sin(rotation));
     ivec2 stepDir = ivec2(sign(rotVec.x), sign(rotVec.y));
-    vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
-    float eps = 1e-6;
-    bool hit = false;
+
+    float traveled = 0.0;
     while (true) { // scary
         vec2 distToNext = vec2(0.0, 0.0);
         float denomX = max(abs(rotVec.x), eps);
@@ -33,15 +38,19 @@ raycast sendRay(vec2 origin, float rotation, sampler2D DataSampler, float maxSig
             distToNext.y = pos.y - mapPos.y;
         }
 
-        if(distToNext.x / denomX < distToNext.y / denomY) {
-            float t = distToNext.x / denomX;
-            pos += rotVec * t;
+        // Compute actual travel distance along the ray (t) for the next grid crossing.
+        float tx = max(distToNext.x / denomX, eps);
+        float ty = max(distToNext.y / denomY, eps);
+        if(tx < ty) {
+            pos += rotVec * tx;
             mapPos.x += stepDir.x;
+            traveled += tx;
         } else {
-            float t = distToNext.y / denomY;
-            pos += rotVec * t;
+            pos += rotVec * ty;
             mapPos.y += stepDir.y;
+            traveled += ty;
         }
+
 
         if(mapPos.x < 0 || mapPos.x >= MAP_SIZE || mapPos.y < 0 || mapPos.y >= MAP_SIZE) {
             hit = false;
@@ -49,8 +58,8 @@ raycast sendRay(vec2 origin, float rotation, sampler2D DataSampler, float maxSig
             break;
         }
 
-        // If the distance from the origin to the current position exceeds maxSight, break the loop before updating wall hits.
-        if(distance(pos, origin) > maxSight) {
+        // Exit if traveled distance exceeds max sight
+        if(traveled > maxSight) {
             break;
         }
 
@@ -63,5 +72,5 @@ raycast sendRay(vec2 origin, float rotation, sampler2D DataSampler, float maxSig
         }
     }
 
-    return raycast(hit, pos, color);
+    return raycast(hit, pos, mapPos, color);
 }
