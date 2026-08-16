@@ -47,11 +47,9 @@ void main(){
             int found = 0;
             int foundX = 0;
             int foundY = 0;
-            int samples = 0;
             for(int row = 0; row < MAP_SIZE; ++row) {
                 for(int col = 0; col < MAP_SIZE; ++col) {
                     vec4 color = getMapData(MapSampler, row, col);
-                    samples++;
                     ivec4 icolor = getIntegerColor(color);
                     if(icolor == PLAYER_SPAWN) {
                         found = 1;

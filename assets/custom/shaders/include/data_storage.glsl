@@ -22,6 +22,7 @@
 #define MAP_DATA_ROW 2 // 128 rows for storing the map data
 
 #define KEY_ROW 130 // 2 rows for storing item pickup locations (color [vec4] and mapCoord [ivec2])
+#define KEYS_LOADED_INDEX MEMORY_PAGE_SIZE-1 // 1.0 if keys have been loaded from the map image, 0.0 if not
 
 #define RAYCAST_ROW 132 // 12 rows for storing raycast hit locations (x [float], y [float], and color [vec4])
 
