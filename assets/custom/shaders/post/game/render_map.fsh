@@ -47,7 +47,7 @@ void main(){
     int row = (rayIndex / MEMORY_PAGE_SIZE) + RAYCAST_ROW;
     int index = rayIndex % MEMORY_PAGE_SIZE;
 
-    vec4 mapColor = getData(DataSampler, row, index);     // TODO: TEXTURE LATER!!
+    vec4 mapColor = getData(DataSampler, row, index);
     float rayX = decodeFloat(getData(DataSampler, row+4, index));
     float rayY = decodeFloat(getData(DataSampler, row+8, index));
 
@@ -78,9 +78,6 @@ void main(){
         color.rgb = hsv2rgb(color.rgb);
     }
 
-    // Cut off ends of walls
-         // This fixes a fish-eye effect
-    
     if(abs(texCoord.y-0.5)*2.0 > wallHeight) {
         fragColor = vec4(0.0, 0.0, 0.0, 1.0);
         return;

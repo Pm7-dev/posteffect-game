@@ -36,7 +36,7 @@ void main(){
     );
 
     // Collect the raycast result for this pixel's direction.
-    struct raycast ray = sendRay(originalPos, rot, DataSampler, MAX_SIGHT);
+    raycast ray = sendRay(originalPos, rot, DataSampler, MAX_SIGHT);
     
     if(realRow == 0) { // Store color of hit wall
         fragColor = ray.color;

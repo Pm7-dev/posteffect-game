@@ -55,12 +55,9 @@ void main() {
     }
     if(dataCoord.x == COORDS_FACING_INDEX) {
         float rot = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_DIRECTION_INDEX));
-        vec2 pos = vec2(
-            decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_X_INDEX)), 
-            decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX))
-        );
+        vec2 pos = vec2(decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_X_INDEX)), decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX)));
 
-        struct raycast ray = sendRay(pos, rot, DataSampler, REACH);
+        raycast ray = sendRay(pos, rot, DataSampler, REACH);
         if(ray.hit) {
             fragColor = encodeMapCoord(ray.mapPosition);
         } else {
@@ -75,7 +72,7 @@ void main() {
             decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX))
         );
 
-        struct raycast ray = sendRay(pos, rot, DataSampler, REACH);
+        raycast ray = sendRay(pos, rot, DataSampler, REACH);
         if(ray.hit) {
             fragColor = encodeFloat(1.0);
         } else {
