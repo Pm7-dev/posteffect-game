@@ -92,22 +92,32 @@ float decodeFloat(vec4 rgba) {
 
 // Encodes an ivec2 into four float rgba values
 vec4 encodeMapCoord(ivec2 coord) {
-    int x = int(coord.x);
-    int y = int(coord.y);
-    int bits = x & 0xFFFF;
-    bits <<= 16;
-    bits |= (y & 0xFFFF);
+    int x = coord.x+1;
+    int y = coord.y+1;
+    int signX = (x & 0x80000000) >> 31;
+    int bitsX = (signX << 15) | (x & 0x7FFF);
+    int signY = (y & 0x80000000) >> 31;
+    int bitsY = (signY << 15) | (y & 0x7FFF);
+    int bits = (bitsX << 16) | bitsY;
     return splitToRGBA(bits);
 }
 
 // Decodes an ivec2 from four float rgba values.
 ivec2 decodeMapCoord(vec4 rgba) {
     int bits = combineToBits(rgba);
-    int y = bits & 0xFFFF;
-    int x = (bits >> 16) & 0xFFFF;
-    return ivec2(x, y);
+    int x = (bits >> 16) & 0x7FFF;
+    int signX = (bits & 0x80000000);
+    int y = bits & 0x7FFF;
+    int signY = bits & 0x8000;
+
+    x |= (signX << 31);
+    y |= (signY << 31);
+    return ivec2(x-1, y-1);
 }
  
+
+
+
 vec4 getData(sampler2D page, int row, int column) {
     return texture(page, vec2(float(column)/MEMORY_PAGE_SIZE, float(row)/MEMORY_PAGE_SIZE));
 }
