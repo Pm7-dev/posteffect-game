@@ -141,7 +141,7 @@
 
         {
             "vertex_shader": "minecraft:core/screenquad",
-            "fragment_shader": "custom:post/util/debug",
+            "fragment_shader": "custom:post/game/render_keys",
             "inputs": [
                 {
                     "sampler_name": "Data",

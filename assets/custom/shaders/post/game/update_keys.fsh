@@ -101,9 +101,10 @@ void main(){
             fragColor = texture(DataSampler, texCoord);
             return;
         }
-        vec2 coords = vec2(mapCoord.x + 0.5, mapCoord.y + 0.5) - playerPos;
+        vec2 coords = vec2(mapCoord.x + 0.5, mapCoord.y +2 + 0.5) - playerPos;
         float angle = atan(coords.y, coords.x);
-        fragColor = encodeFloat(playerRot - angle);
+        float dist = mod(playerRot-angle+PI, 2*PI) - PI;
+        fragColor = encodeFloat(dist);
         return;
     }
 
@@ -118,7 +119,7 @@ void main(){
             fragColor = texture(DataSampler, texCoord);
             return;
         }
-        vec2 coords = vec2(mapCoord.x + 0.5, mapCoord.y + 0.5) - playerPos;
+        vec2 coords = vec2(mapCoord.x + 0.5, mapCoord.y +2+ 0.5) - playerPos;
         fragColor = encodeFloat(length(coords));
         return;
     }

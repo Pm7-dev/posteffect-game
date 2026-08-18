@@ -2,6 +2,7 @@
 
 #moj_import <custom:data_storage.glsl>
 #moj_import <custom:game_globals.glsl>
+#moj_import <custom:render_globals.glsl>
 
 uniform sampler2D DataSampler;
 uniform sampler2D WallSampler;
@@ -84,7 +85,7 @@ void main(){
     }
 
 
-    color = mix(color, vec4(0.0, 0.0, 0.0, 1.0), (dist-3)/5.);
+    color = fog(color, dist);
 
     fragColor = color;
 

@@ -3,6 +3,7 @@
 #moj_import <minecraft:globals.glsl>
 #moj_import <custom:data_storage.glsl>
 #moj_import <custom:game_globals.glsl>
+#moj_import <custom:render_globals.glsl>
 
 uniform sampler2D DataSampler;
 uniform sampler2D MinecraftSampler;
@@ -30,12 +31,14 @@ vec3 hsv2rgb(vec3 c)
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-struct Key {
-    vec2 relativePosition;
-    float distance;
-    vec4 color;
-    bool defined;
-};
+vec2 getAnimationOffset() {
+    int frame = int(round(GameTime * 14000)) % 8;
+    if(frame < 4) {
+        return vec2(frame * 0.25, 0.0);
+    } else {
+        return vec2((frame - 4) * 0.25, 0.5);
+    }
+}
 
 void main(){
     float playerRot = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_DIRECTION_INDEX));
@@ -43,64 +46,50 @@ void main(){
         decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_X_INDEX)), 
         decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX))
     );
-    
-    // Load keys (since the last pixel in the key row determines when key initialization is finished, there can only be page size-1 keys)
-    Key keys[MEMORY_PAGE_SIZE-1];
-    for(int i=0; i<(MEMORY_PAGE_SIZE-1);i++) {
-        vec4 keyCoordData = getData(DataSampler, KEY_ROW, i);
-
-        // only the first key could have coords 0, 0. others must be empty.
-        if(i>0 && keyCoordData==vec4(0.0)) {
-            break;
-        }
-
-        ivec2 mapCoord = decodeMapCoord(keyCoordData);
-        vec2 coords = vec2(mapCoord.x + 0.5, mapCoord.y + 0.5) - playerPos;
-        
-        vec4 color = getData(DataSampler, KEY_ROW+1, i);
-
-        keys[i] = Key(coords, length(coords), color, true);
-    }
-
-
-
     int rayIndex = int(texCoord.x * SCREEN_WIDTH);
     int row = (rayIndex / MEMORY_PAGE_SIZE) + RAYCAST_ROW;
     int index = rayIndex % MEMORY_PAGE_SIZE;
     vec2 rayPos = vec2(decodeFloat(getData(DataSampler, row+4, index)), decodeFloat(getData(DataSampler, row+8, index)));
     float dist = distance(rayPos, playerPos);
     float offsetFromMid = texCoord.x - 0.5;
-    float rotOffset = -(offsetFromMid * radians(FOV));
+    // float rotOffset = -(offsetFromMid * radians(FOV));
+    float rotOffset = offsetFromMid * radians(FOV);
     float fixedDist = dist * cos(rotOffset);
 
-    float rayRot = playerRot + rotOffset;
+    for(int i=0; i<MEMORY_PAGE_SIZE-1; i++) {
+        ivec2 mapCoord = decodeMapCoord(getData(DataSampler, KEY_ROW, i));
+        if(i>0 && mapCoord == ivec2(0, 0)) {
+            fragColor = texture(MinecraftSampler, texCoord);
+            return;
+        }
+        vec2 coords = vec2(mapCoord.x + 0.5, mapCoord.y + 0.5);
+        vec4 color = getData(DataSampler, KEY_ROW+1, i);
+        float rotDist = decodeFloat(getData(DataSampler, KEY_ROW+2, i)) + rotOffset;
+        float dist = decodeFloat(getData(DataSampler, KEY_ROW+3, i));
 
-    // for(int i=0; i<MEMORY_PAGE_SIZE+1; i++) {
-    //     Key key = keys[i];
+        if(dist > MAX_SIGHT) {
+            continue;
+        }
 
-    //     if(key.defined == false) {
-    //         break;
-    //     }
+        if(dist > fixedDist) {
+            continue;
+        }
 
-    //     if(key.distance > MAX_SIGHT) {
-    //         continue;
-    //     }
+        float keySize = (1.0/(dist));
+        if(abs(rotDist) < keySize/2) {
+            float texX = (rotDist + keySize/2) / keySize / 4.;
+            float texY = (0.5*(((1.0-texCoord.y)-0.5)/keySize + 0.5));
 
-    //     if(key.distance > fixedDist) {
-    //         continue;
-    //     }
+            if(abs(texCoord.y-0.5)*2.0 > keySize) {
+                fragColor = texture(MinecraftSampler, texCoord);
+                return;
+            }
+            vec4 keyColor = texture(KeySampler, vec2(texX, texY) + getAnimationOffset());
+            fragColor = mix(texture(MinecraftSampler, texCoord), fog(keyColor, dist), keyColor.a);
+            return;
+        }
 
-    //     float keyAngle = atan(key.relativePosition.y, key.relativePosition.x);
-    //     float angleDist = min(abs(keyAngle-rayRot), abs(rayRot-keyAngle));
-    //     angleDist /= radians(FOV/2);
-
-    //     float keySize = (1.0/(key.distance));
-    //     if(angleDist < keySize) {
-    //         fragColor = vec4(1.0, 0.0, 0.0, 1.0);
-    //         return;
-    //     }
-
-    // }
+    }
 
     fragColor = texture(MinecraftSampler, texCoord);
 }
