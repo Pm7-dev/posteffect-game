@@ -52,18 +52,21 @@ void main(){
     vec2 rayPos = vec2(decodeFloat(getData(DataSampler, row+4, index)), decodeFloat(getData(DataSampler, row+8, index)));
     float dist = distance(rayPos, playerPos);
     float offsetFromMid = texCoord.x - 0.5;
-    // float rotOffset = -(offsetFromMid * radians(FOV));
     float rotOffset = offsetFromMid * radians(FOV);
     float fixedDist = dist * cos(rotOffset);
 
+    bool found = false;
+    float closestDistance = 0.0;
+    vec4 color = vec4(0.0);
+
     for(int i=0; i<MEMORY_PAGE_SIZE-1; i++) {
+
         ivec2 mapCoord = decodeMapCoord(getData(DataSampler, KEY_ROW, i));
-        if(i>0 && mapCoord == ivec2(0, 0)) {
-            fragColor = texture(MinecraftSampler, texCoord);
-            return;
+        if(mapCoord == ivec2(-1, -1)) {
+            continue;
         }
         vec2 coords = vec2(mapCoord.x + 0.5, mapCoord.y + 0.5);
-        vec4 color = getData(DataSampler, KEY_ROW+1, i);
+        vec4 dataColor = getData(DataSampler, KEY_ROW+1, i);
         float rotDist = decodeFloat(getData(DataSampler, KEY_ROW+2, i)) + rotOffset;
         float dist = decodeFloat(getData(DataSampler, KEY_ROW+3, i));
 
@@ -81,14 +84,32 @@ void main(){
             float texY = (0.5*(((1.0-texCoord.y)-0.5)/keySize + 0.5));
 
             if(abs(texCoord.y-0.5)*2.0 > keySize) {
-                fragColor = texture(MinecraftSampler, texCoord);
-                return;
+                continue;
             }
+
             vec4 keyColor = texture(KeySampler, vec2(texX, texY) + getAnimationOffset());
-            fragColor = mix(texture(MinecraftSampler, texCoord), fog(keyColor, dist), keyColor.a);
-            return;
+            if(keyColor.a == 0.0) {
+                continue;
+            }
+
+            if(found && dist > closestDistance) {
+                continue;
+            }
+
+            if(dist <= 0.1) {
+                continue;
+            }
+            
+            found = true;
+            closestDistance = dist;
+            color = keyColor;
         }
 
+    }
+
+    if(found) {
+        fragColor = mix(texture(MinecraftSampler, texCoord), fog(color, closestDistance), color.a);
+        return;
     }
 
     fragColor = texture(MinecraftSampler, texCoord);

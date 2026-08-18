@@ -82,6 +82,10 @@ void main(){
         }
         vec4 loadedKeyColor = getData(DataSampler, KEY_ROW, dataCoord.x);
         ivec2 loadedKeyCoordinates = decodeMapCoord(loadedKeyColor);
+        if(loadedKeyCoordinates == ivec2(-1, -1)) {
+            fragColor = texture(DataSampler, texCoord);
+            return;
+        }
         fragColor = getMapData(MapSampler, loadedKeyCoordinates.y, loadedKeyCoordinates.x);
         return;
 
@@ -97,7 +101,7 @@ void main(){
             decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX))
         );
         ivec2 mapCoord = decodeMapCoord(getData(DataSampler, KEY_ROW, dataCoord.x));
-        if(dataCoord.x > 0 && mapCoord == ivec2(0, 0)) {
+        if(mapCoord == ivec2(-1, -1)) {
             fragColor = texture(DataSampler, texCoord);
             return;
         }
@@ -115,7 +119,7 @@ void main(){
             decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX))
         );
         ivec2 mapCoord = decodeMapCoord(getData(DataSampler, KEY_ROW, dataCoord.x));
-        if(dataCoord.x > 0 && mapCoord == ivec2(0, 0)) {
+        if(mapCoord == ivec2(-1, -1)) {
             fragColor = texture(DataSampler, texCoord);
             return;
         }
