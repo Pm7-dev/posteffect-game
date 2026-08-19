@@ -50,34 +50,30 @@ void main(){
     int row = (rayIndex / MEMORY_PAGE_SIZE) + RAYCAST_ROW;
     int index = rayIndex % MEMORY_PAGE_SIZE;
     vec2 rayPos = vec2(decodeFloat(getData(DataSampler, row+4, index)), decodeFloat(getData(DataSampler, row+8, index)));
-    float dist = distance(rayPos, playerPos);
     float offsetFromMid = texCoord.x - 0.5;
     float rotOffset = offsetFromMid * radians(FOV);
-    float fixedDist = dist * cos(rotOffset);
+    float fixedDist = distance(rayPos, playerPos) * cos(rotOffset);
 
     bool found = false;
     float closestDistance = 0.0;
     vec4 color = vec4(0.0);
 
+    vec2 currentAnimationOffset = getAnimationOffset();
+
     for(int i=0; i<MEMORY_PAGE_SIZE-1; i++) {
 
         ivec2 mapCoord = decodeMapCoord(getData(DataSampler, KEY_ROW, i));
         if(mapCoord == ivec2(-1, -1)) {
+            break;
+        }
+        
+        float dist = decodeFloat(getData(DataSampler, KEY_ROW+3, i)) * cos(rotOffset);
+
+        if(dist > MAX_SIGHT || dist > fixedDist || dist <= 0.1) {
             continue;
         }
-        vec2 coords = vec2(mapCoord.x + 0.5, mapCoord.y + 0.5);
-        vec4 dataColor = getData(DataSampler, KEY_ROW+1, i);
+
         float rotDist = decodeFloat(getData(DataSampler, KEY_ROW+2, i)) + rotOffset;
-        float dist = decodeFloat(getData(DataSampler, KEY_ROW+3, i));
-
-        if(dist > MAX_SIGHT) {
-            continue;
-        }
-
-        if(dist > fixedDist) {
-            continue;
-        }
-
         float keySize = (1.0/(dist));
         if(abs(rotDist) < keySize/2) {
             float texX = (rotDist + keySize/2) / keySize / 4.;
@@ -87,18 +83,20 @@ void main(){
                 continue;
             }
 
-            vec4 keyColor = texture(KeySampler, vec2(texX, texY) + getAnimationOffset());
-            if(keyColor.a == 0.0) {
-                continue;
-            }
-
             if(found && dist > closestDistance) {
                 continue;
             }
 
-            if(dist <= 0.1) {
+            vec4 keyColor = texture(KeySampler, vec2(texX, texY) + currentAnimationOffset);
+
+            if(keyColor.a == 0.0) {
                 continue;
             }
+
+            vec4 dataColor = getData(DataSampler, KEY_ROW+1, i);
+            keyColor.rgb = rgb2hsv(keyColor.rgb);
+            keyColor.r = rgb2hsv(dataColor.rgb).r;
+            keyColor.rgb = hsv2rgb(keyColor.rgb);
             
             found = true;
             closestDistance = dist;

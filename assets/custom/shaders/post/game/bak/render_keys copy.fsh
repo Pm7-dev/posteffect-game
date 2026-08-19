@@ -40,13 +40,6 @@ vec2 getAnimationOffset() {
     }
 }
 
-struct TexUnit {
-    bool exists;
-    float dist;
-    float texX;
-    float texY;
-};
-
 void main(){
     float playerRot = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_DIRECTION_INDEX));
     vec2 playerPos = vec2(
@@ -57,57 +50,66 @@ void main(){
     int row = (rayIndex / MEMORY_PAGE_SIZE) + RAYCAST_ROW;
     int index = rayIndex % MEMORY_PAGE_SIZE;
     vec2 rayPos = vec2(decodeFloat(getData(DataSampler, row+4, index)), decodeFloat(getData(DataSampler, row+8, index)));
-    float rotOffset = (texCoord.x - 0.5) * radians(FOV);
-    float wallDist = distance(rayPos, playerPos) * cos(rotOffset);
+    float dist = distance(rayPos, playerPos);
+    float offsetFromMid = texCoord.x - 0.5;
+    float rotOffset = offsetFromMid * radians(FOV);
+    float fixedDist = dist * cos(rotOffset);
 
-    TexUnit closest = TexUnit(false, 0., 0., 0.);
+    bool found = false;
+    float closestDistance = 0.0;
+    vec4 color = vec4(0.0);
+
+    vec2 currentAnimationOffset = getAnimationOffset();
+
     for(int i=0; i<MEMORY_PAGE_SIZE-1; i++) {
+
         ivec2 mapCoord = decodeMapCoord(getData(DataSampler, KEY_ROW, i));
         if(mapCoord == ivec2(-1, -1)) {
-            fragColor = texture(MinecraftSampler, texCoord);
-            return;
-        }
-
-        float dist = decodeFloat(getData(DataSampler, KEY_ROW+3, i));
-        if(dist > MAX_SIGHT) {
-            continue;
-        }
-        if(dist > wallDist) { // don't render if behind wall
             continue;
         }
         
+        float dist = decodeFloat(getData(DataSampler, KEY_ROW+3, i));
 
-        vec2 coords = vec2(mapCoord.x + 0.5, mapCoord.y + 0.5);
-        vec4 color = getData(DataSampler, KEY_ROW+1, i);
+        if(dist > MAX_SIGHT || dist > fixedDist || dist <= 0.1) {
+            continue;
+        }
+
         float rotDist = decodeFloat(getData(DataSampler, KEY_ROW+2, i)) + rotOffset;
-
         float keySize = (1.0/(dist));
         if(abs(rotDist) < keySize/2) {
             float texX = (rotDist + keySize/2) / keySize / 4.;
             float texY = (0.5*(((1.0-texCoord.y)-0.5)/keySize + 0.5));
 
             if(abs(texCoord.y-0.5)*2.0 > keySize) {
-                fragColor = texture(MinecraftSampler, texCoord);
                 continue;
             }
 
-            // if (closest.exists && dist >= closest.dist) {
-            //     continue;
-            // }
+            if(found && dist > closestDistance) {
+                continue;
+            }
 
-            closest = TexUnit(true, dist, texX, texY);
+            vec4 keyColor = texture(KeySampler, vec2(texX, texY) + currentAnimationOffset);
+
+            if(keyColor.a == 0.0) {
+                continue;
+            }
+
+            vec4 dataColor = getData(DataSampler, KEY_ROW+1, i);
+            keyColor.rgb = rgb2hsv(keyColor.rgb);
+            keyColor.r = rgb2hsv(dataColor.rgb).r;
+            keyColor.rgb = hsv2rgb(keyColor.rgb);
+            
+            found = true;
+            closestDistance = dist;
+            color = keyColor;
         }
+
     }
 
-    if(closest.exists) {
-        // vec4 keyColor = texture(KeySampler, vec2(closest.texX, closest.texY) + getAnimationOffset());
-        fragColor = vec4(1.0);
+    if(found) {
+        fragColor = mix(texture(MinecraftSampler, texCoord), fog(color, closestDistance), color.a);
         return;
-        // fragColor = mix(texture(MinecraftSampler, texCoord), fog(keyColor, closest.dist), keyColor.a);
-        // return;
     }
-
-    
 
     fragColor = texture(MinecraftSampler, texCoord);
 }
