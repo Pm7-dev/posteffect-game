@@ -135,6 +135,28 @@ void main(){
         fragColor = encodeFloat(rot);
         return;
     }
+    if(dataCoord.x >= INVENTORY_INDEX) {
+        int keysLoaded = int(decodeFloat(getData(DataSampler, KEY_ROW, KEYS_LOADED_INDEX)));
+        if(keysLoaded < 1.0) {
+            fragColor = texture(DataSampler, texCoord);
+            return;
+        }
+
+        vec4 color = getData(DataSampler, dataCoord.x, dataCoord.y);
+        if(color == vec4(0.0)) {
+            for(int i = 0; i<MEMORY_PAGE_SIZE-1; i++) {
+                vec4 keyColor = getData(DataSampler, KEY_ROW+1, i);
+                if(keyColor == vec4(0.0)) { // when keycolor is 0 it is no longer a key.....
+                    continue;
+                }
+                float dist = decodeFloat(getData(DataSampler, KEY_ROW+3, i));
+                if(dist < PICKUP_RADIUS) {
+                    fragColor = keyColor;
+                    return;
+                }
+            }
+        }
+    }
 
 
     fragColor = texture(DataSampler, texCoord);

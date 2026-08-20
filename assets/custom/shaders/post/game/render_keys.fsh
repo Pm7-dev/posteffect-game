@@ -94,6 +94,9 @@ void main(){
             }
 
             vec4 dataColor = getData(DataSampler, KEY_ROW+1, i);
+            if(dataColor == vec4(0.0)) {
+                continue;
+            }
             keyColor.rgb = rgb2hsv(keyColor.rgb);
             keyColor.r = rgb2hsv(dataColor.rgb).r;
             keyColor.rgb = hsv2rgb(keyColor.rgb);

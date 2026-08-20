@@ -74,9 +74,17 @@ void main(){
     // Load key colors from map image
     if(dataCoord.y == KEY_ROW + 1) {
 
-        // exit early if keys are already loaded
+        // If keys are already loaded, check for item pickup.
         int loaded = int(decodeFloat(getData(DataSampler, KEY_ROW, KEYS_LOADED_INDEX)));
         if(loaded == 1) {
+
+            float dist = decodeFloat(getData(DataSampler, KEY_ROW+3, dataCoord.x));
+            if(dist < PICKUP_RADIUS) {
+                fragColor = vec4(0.0);
+                return;
+            }
+            
+
             fragColor = texture(DataSampler, texCoord);
             return;
         }
