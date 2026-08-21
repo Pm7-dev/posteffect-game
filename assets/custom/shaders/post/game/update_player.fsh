@@ -167,7 +167,7 @@ void main(){
             }
         }
     }
-    if(dataCoord.x >= INVENTORY_POINTER_INDEX) {
+    if(dataCoord.x >= INVENTORY_POINTER_INDEX && dataCoord.x < INVENTORY_POINTER_INDEX + INVENTORY_SPACE) {
         int currentPointerIndex = dataCoord.x - INVENTORY_POINTER_INDEX;
         if(currentPointerIndex>0) {
             ivec2 prevPointer = decodePointer(getData(DataSampler, dataCoord.y, dataCoord.x-1));
@@ -177,28 +177,21 @@ void main(){
             }
         }
 
-        int count = 0;
-        int nextUnstoredInventoryIndex = 0;
-        while (count < currentPointerIndex) {
-            vec4 color = getData(DataSampler, PLAYER_DATA_ROW, INVENTORY_INDEX + nextUnstoredInventoryIndex);
+        int indexToCheck = 0;
+        int keysFound = 0;
+        while(INVENTORY_INDEX + indexToCheck < INVENTORY_POINTER_INDEX) { 
+            vec4 color = getData(DataSampler, PLAYER_DATA_ROW, INVENTORY_INDEX + indexToCheck);
             if(color != vec4(0.0)) {
-                count++;
+                keysFound++;
+                if(keysFound > currentPointerIndex) {
+                    ivec2 coords = ivec2(INVENTORY_INDEX + indexToCheck, PLAYER_DATA_ROW);
+                    fragColor = encodePointer(coords);
+                    return;
+                }
             }
-            nextUnstoredInventoryIndex++;
-
-            if(nextUnstoredInventoryIndex == INVENTORY_POINTER_INDEX) {
-                fragColor = encodePointer(ivec2(-1, -1));
-                return;
-            }
+            indexToCheck++;
         }
-        
-        ivec2 coords = ivec2(INVENTORY_INDEX + nextUnstoredInventoryIndex, PLAYER_DATA_ROW);
-        if(getData(DataSampler, coords.y, coords.x) == vec4(0.0)) {
-            fragColor = encodePointer(ivec2(-1, -1));
-            return;
-        }
-
-        fragColor = encodePointer(coords);
+        fragColor = encodePointer(ivec2(-1, -1));
         return;
 
     }
