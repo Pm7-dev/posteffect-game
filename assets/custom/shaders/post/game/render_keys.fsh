@@ -60,7 +60,7 @@ void main(){
 
     vec2 currentAnimationOffset = getAnimationOffset();
 
-    for(int i=0; i<MEMORY_PAGE_SIZE-1; i++) {
+    for(int i=0; i<KEYS_LOADED_INDEX; i++) {
 
         ivec2 mapCoord = decodeMapCoord(getData(DataSampler, KEY_ROW, i));
         if(mapCoord == ivec2(-1, -1)) {
