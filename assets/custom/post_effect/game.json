@@ -166,12 +166,18 @@
             "fragment_shader": "custom:post/game/render_gui",
             "inputs": [
                 {
+                    "sampler_name": "Minecraft",
+                    "target": "render_swap"
+                },
+                {
                     "sampler_name": "Data",
                     "target": "data"
                 },
                 {
-                    "sampler_name": "Minecraft",
-                    "target": "render_swap"
+                    "sampler_name": "Overlay",
+                    "location": "custom:game/overlay",
+                    "width": 1920,
+                    "height": 1080
                 }
             ],
             "output": "minecraft:main"
