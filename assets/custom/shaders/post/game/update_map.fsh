@@ -44,7 +44,7 @@ void main(){
                     }
 
                     ivec4 icurrentInventoryColor = getIntegerColor(currentInventoryColor);
-                    if(icolor.rgb == icurrentInventoryColor.rgb) {
+                    if(closeEnoughRGB(icolor, icurrentInventoryColor)) {
                         fragColor = vec4(0.0);
                         return;
                     }
@@ -89,7 +89,8 @@ void main(){
                 // make sure player has a key for this door.
                 for(int i=INVENTORY_INDEX; i<INVENTORY_INDEX+INVENTORY_SPACE; i++) {
                     vec4 invColor = getData(DataSampler, PLAYER_DATA_ROW, i);
-                    if(invColor.rgb == color.rgb) {
+                    ivec4 iinvColor = getIntegerColor(invColor);
+                    if(closeEnoughRGB(icolor, iinvColor)) {
                         fragColor = vec4(0.0, 0.0, 0.0, 0.0);
                         return;
                     }

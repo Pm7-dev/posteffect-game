@@ -41,16 +41,27 @@
 // Anything with opacity 150 will be seen as a key.
 //TODO: enemy types
 ivec4 getIntegerColor(vec4 color) { // returns a color as an ivec4 with range 0-255
-    return ivec4(int(color.r*255.0), int(color.g*255.0), int(color.b*255.0), int(color.a*255.0));
+    return ivec4(int(round(color.r*255.0)), int(round(color.g*255.0)), int(round(color.b*255.0)), int(round(color.a*255.0)));
 }
 bool isDoor(ivec4 color) {
-    if(color.a == WALL_DOOR.a) {
+    if(abs(color.a-WALL_DOOR.a) <= 1) {
         if(color == WALL_BRICK || color == WALL_WOOD || color == WALL_STONE || color == WALL_DIRT) {
             return false;
         }
         return true;
     }
     return false;
+}
+bool closeEnoughRGBA(ivec4 c1, ivec4 c2) {
+    return abs(c1.r-c2.r) <= 1 &&
+    abs(c1.g-c2.g) <= 1 &&
+    abs(c1.b-c2.b) <= 1 &&
+    abs(c1.a-c2.a) <= 1;
+}
+bool closeEnoughRGB(ivec4 c1, ivec4 c2) {
+    return abs(c1.r-c2.r) <= 1 &&
+    abs(c1.g-c2.g) <= 1 &&
+    abs(c1.b-c2.b) <= 1;
 }
 
 
@@ -128,7 +139,7 @@ ivec2 decodePointer(vec4 rgba) {
 
 
 vec4 getData(sampler2D page, int row, int column) {
-    return texture(page, vec2(float(column)/MEMORY_PAGE_SIZE, float(row)/MEMORY_PAGE_SIZE));
+    return texelFetch(page, ivec2(column, row), 0);
 }
 vec4 getData(sampler2D page, int row, int column, int offset) {
     row += offset/MEMORY_PAGE_SIZE;
@@ -168,7 +179,7 @@ ivec2 translateDataCoordToMapCoord(ivec2 dataCoord) {
 
 
 vec4 getMapData(sampler2D MapSampler, int row, int column) {
-    return texture(MapSampler, vec2(float(column)/MAP_SIZE, float(row)/MAP_SIZE));
+    return texelFetch(MapSampler, ivec2(column, row), 0);
 }
 vec4 getMapData(sampler2D MapSampler, int index) {
     int row = index/MAP_SIZE;
