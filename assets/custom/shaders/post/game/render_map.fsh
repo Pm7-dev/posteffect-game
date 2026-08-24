@@ -22,6 +22,9 @@ vec2 getTextureOffset(vec4 mapColor) {
     } else if(icolor == WALL_DIRT) {
         return vec2(0.75, 0.0);
     }
+    else if(icolor == WALL_WIN) {
+        return vec2(0.5, 0.75);
+    }
     return vec2(0.75, 0.75);
 }
 

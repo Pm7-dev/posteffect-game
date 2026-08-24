@@ -6,6 +6,7 @@
 #define GAME_META_ROW 0 // One row for game metadata 
 #define GAME_INITIALIZED_INDEX 0
 #define LAST_GAME_TIME_INDEX 1
+#define END_SCREEN_INDEX 2 // 0 for none, 1 for win, 2 for loss.
 
 #define PLAYER_DATA_ROW 1 // One row for player data (inputs, position, and inventory)
 #define MOVEMENT_INDEX 0
@@ -37,6 +38,7 @@
 #define WALL_WOOD ivec4(85, 35, 17, 255)
 #define WALL_STONE ivec4(134, 136, 136, 255)
 #define WALL_DIRT ivec4(107, 76, 62, 255)
+#define WALL_WIN ivec4(255, 255, 0, 255) // yellow win wall
 #define WALL_DOOR ivec4(0, 0, 0, 255) // Anything else with this opacity will be seen as a door.
 // Anything with opacity 150 will be seen as a key.
 //TODO: enemy types

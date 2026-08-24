@@ -7,6 +7,7 @@
 uniform sampler2D MinecraftSampler;
 uniform sampler2D DataSampler;
 uniform sampler2D OverlaySampler;
+uniform sampler2D WinScreenSampler;
 uniform vec2 MinecraftSize;
 
 in vec2 texCoord;
@@ -18,6 +19,16 @@ float sdfCircle(float x, float y, vec2 uv) {
 }
 
 void main(){
+    int endScreen = int(round(decodeFloat(getData(DataSampler, GAME_META_ROW, END_SCREEN_INDEX))));
+    if(endScreen == 1) {
+        fragColor = texture(WinScreenSampler, vec2(texCoord.x, 1-texCoord.y));
+        return;
+    } else if(endScreen == 2) {
+        // fragColor = texture(WinScreenSampler, vec2(texCoord.x, 1-texCoord.y));
+        fragColor = vec4(0.0);
+        return;
+    }
+
     vec2 uv = gl_FragCoord.xy / ScreenSize.y;
 
     float slotSize = (1.0/INVENTORY_SPACE);
