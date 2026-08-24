@@ -11,7 +11,7 @@
 #define ROT_SPEED 180.0 // degrees/second
 
 #define MAX_SIGHT 12 // meters
-#define REACH 2.25 // meters, for opening doors
+#define REACH 2. // meters, for opening doors
 
 #define PI 3.14159265
 
