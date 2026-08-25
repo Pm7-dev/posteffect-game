@@ -33,7 +33,7 @@ void main(){
 
         ivec2 hitCoord;
         float xDist = round(x) - x;
-        if(abs(xDist) < HITBOX_RADIUS+0.05) {
+        if(abs(xDist) > HITBOX_RADIUS+0.05) {
             float yDist = round(y) - y;
             if(abs(yDist) < HITBOX_RADIUS+0.05) {
                 fragColor = texture(DataSampler, texCoord);

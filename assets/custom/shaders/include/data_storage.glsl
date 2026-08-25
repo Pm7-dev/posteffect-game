@@ -28,7 +28,7 @@
 
 #define RAYCAST_ROW 134 // 12 rows for storing raycast hit locations (x [float], y [float], and color [vec4])
 
-#define ENEMY_ROW 146 // 4 rows for storing enemy information (type [float], x [float], y [float], health [float], )
+#define ENEMY_ROW 146 // 5 rows for storing enemy information (x [float], y [float], speed [float], sight [float])
 
 
 
