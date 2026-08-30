@@ -105,7 +105,7 @@ void main(){
         float playerY = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX));
         vec2 toPlayer = vec2(playerX - currentX, playerY - currentY);
         float distanceToPlayer = length(toPlayer);
-        float movementDistance = min(ENEMY_SPEED * deltaTime, max(distanceToPlayer - HITBOX_RADIUS, 0.0));
+        float movementDistance = min(ENEMY_SPEED * deltaTime, max(distanceToPlayer - (HITBOX_RADIUS-0.01), 0.0));
         float idealMovement = distanceToPlayer > 0.0 ? movementDistance * toPlayer.x / distanceToPlayer : 0.0;
 
         ivec2 hitCoord = translateMapCoordToDataCoord(ivec2(int(currentX + idealMovement), int(currentY)));
@@ -150,7 +150,7 @@ void main(){
         float playerY = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX));
         vec2 toPlayer = vec2(playerX - currentX, playerY - currentY);
         float distanceToPlayer = length(toPlayer);
-        float movementDistance = min(ENEMY_SPEED * deltaTime, max(distanceToPlayer - HITBOX_RADIUS, 0.0));
+        float movementDistance = min(ENEMY_SPEED * deltaTime, max(distanceToPlayer - (HITBOX_RADIUS-0.01), 0.0));
         float idealMovement = distanceToPlayer > 0.0 ? movementDistance * toPlayer.y / distanceToPlayer : 0.0;
 
         ivec2 hitCoord = translateMapCoordToDataCoord(ivec2(int(currentX ), int(currentY+idealMovement)));

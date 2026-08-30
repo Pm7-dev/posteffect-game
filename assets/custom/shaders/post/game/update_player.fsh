@@ -77,9 +77,15 @@ void main(){
             fragColor = encodeFloat(0.0); // 30 degrees in radians
             return;
         }
+
+        if(dataCoord.x == PLAYER_HEALTH_INDEX) {
+            fragColor = encodeFloat(100.0);
+            return;
+        }
     }
 
-    if(dataCoord.y != PLAYER_DATA_ROW) {
+    float health = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_HEALTH_INDEX));
+    if(dataCoord.y != PLAYER_DATA_ROW || health <= 0.) {
         fragColor = texture(DataSampler, texCoord);
         return;
     }
@@ -129,6 +135,28 @@ void main(){
         rot += decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, ROTATION_INDEX)) * radians(ROT_SPEED) * deltaTime;
         rot = mod(rot, 2*PI);
         fragColor = encodeFloat(rot);
+        return;
+    }
+    if(dataCoord.x == PLAYER_HEALTH_INDEX) {
+        // search through enemy data row to check for damage
+        for(int i=0; i<ENEMIES_LOADED_INDEX; i++) {
+            ivec2 origin = decodeMapCoord(getData(DataSampler, ENEMY_ROW, i));
+            if(origin == ivec2(-1, -1)) {
+                break;
+            }
+
+            float dist = decodeFloat(getData(DataSampler, ENEMY_ROW+4, i));
+            if(dist <= HITBOX_RADIUS) {
+                health -= ENEMY_DAMAGE * deltaTime;
+            }
+
+            if(health <= 0.) {
+                health = 0.;
+                break;
+            }
+            
+        }
+        fragColor = encodeFloat(health);
         return;
     }
     if(dataCoord.x >= INVENTORY_INDEX && dataCoord.x < INVENTORY_POINTER_INDEX) {

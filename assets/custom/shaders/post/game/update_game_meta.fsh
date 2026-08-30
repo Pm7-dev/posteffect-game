@@ -28,6 +28,13 @@ void main(){
     }
 
     if(dataCoord.x == END_SCREEN_INDEX) {
+
+        float health = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_HEALTH_INDEX));
+        if(health <= 0.) {
+            fragColor = encodeFloat(2.0);
+            return;
+        }
+
         float x = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_X_INDEX));
         float y = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX));
 

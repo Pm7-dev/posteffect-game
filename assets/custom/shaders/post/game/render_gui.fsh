@@ -8,6 +8,7 @@ uniform sampler2D MinecraftSampler;
 uniform sampler2D DataSampler;
 uniform sampler2D OverlaySampler;
 uniform sampler2D WinScreenSampler;
+uniform sampler2D LoseScreenSampler;
 uniform vec2 MinecraftSize;
 
 in vec2 texCoord;
@@ -24,8 +25,7 @@ void main(){
         fragColor = texture(WinScreenSampler, vec2(texCoord.x, 1-texCoord.y));
         return;
     } else if(endScreen == 2) {
-        // fragColor = texture(WinScreenSampler, vec2(texCoord.x, 1-texCoord.y));
-        fragColor = vec4(0.0);
+        fragColor = texture(LoseScreenSampler, vec2(texCoord.x, 1-texCoord.y));
         return;
     }
 

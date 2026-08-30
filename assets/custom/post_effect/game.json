@@ -34,28 +34,6 @@
 
         {
             "vertex_shader": "minecraft:core/screenquad",
-            "fragment_shader": "custom:post/game/update_enemies",
-            "inputs": [
-                {
-                    "sampler_name": "Data",
-                    "target": "data"
-                },
-                {
-                    "sampler_name": "Map",
-                    "location": "custom:game/map",
-                    "width": 256,
-                    "height": 256
-                }
-
-            ],
-            "output": "data_swap"
-        },
-        {"vertex_shader": "minecraft:core/screenquad","fragment_shader": "custom:post/util/shortblit","inputs": [{"sampler_name": "In","target": "data_swap"}],"output": "data"},
-
-        
-
-        {
-            "vertex_shader": "minecraft:core/screenquad",
             "fragment_shader": "custom:post/game/update_keys",
             "inputs": [
                 {
@@ -79,6 +57,28 @@
         {
             "vertex_shader": "minecraft:core/screenquad",
             "fragment_shader": "custom:post/game/update_map",
+            "inputs": [
+                {
+                    "sampler_name": "Data",
+                    "target": "data"
+                },
+                {
+                    "sampler_name": "Map",
+                    "location": "custom:game/map",
+                    "width": 256,
+                    "height": 256
+                }
+
+            ],
+            "output": "data_swap"
+        },
+        {"vertex_shader": "minecraft:core/screenquad","fragment_shader": "custom:post/util/shortblit","inputs": [{"sampler_name": "In","target": "data_swap"}],"output": "data"},
+
+
+
+        {
+            "vertex_shader": "minecraft:core/screenquad",
+            "fragment_shader": "custom:post/game/update_enemies",
             "inputs": [
                 {
                     "sampler_name": "Data",
@@ -212,6 +212,12 @@
                 {
                     "sampler_name": "WinScreen",
                     "location": "custom:game/win_screen",
+                    "width": 160,
+                    "height": 90
+                },
+                {
+                    "sampler_name": "LoseScreen",
+                    "location": "custom:game/lose_screen",
                     "width": 160,
                     "height": 90
                 }

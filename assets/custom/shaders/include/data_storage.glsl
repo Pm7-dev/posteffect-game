@@ -25,12 +25,12 @@
 #define MAP_DATA_ROW 2 // 128 rows for storing the map data
 
 #define KEY_ROW 130 // 4 rows for storing item pickup information (mapCoord [ivec2], color [vec4], relativeRot [float], and relativeDist [float])
-#define KEYS_LOADED_INDEX MEMORY_PAGE_SIZE-3 // 1.0 if keys have been loaded from the map image, 0.0 if not
+#define KEYS_LOADED_INDEX MEMORY_PAGE_SIZE-1 // 1.0 if keys have been loaded from the map image, 0.0 if not
 
 #define RAYCAST_ROW 134 // 12 rows for storing raycast hit locations (x [float], y [float], and color [vec4])
 
 #define ENEMY_ROW 146 // 5 rows for storing enemy information (originalLoc [ivec2], x [float], y [float], rotation [float], and relativeDist [float])
-#define ENEMIES_LOADED_INDEX MEMORY_PAGE_SIZE-2 // 1.0 if keys have been loaded from the map image, 0.0 if not
+#define ENEMIES_LOADED_INDEX MEMORY_PAGE_SIZE-1 // 1.0 if keys have been loaded from the map image, 0.0 if not
 
 
 

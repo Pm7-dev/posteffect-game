@@ -24,4 +24,5 @@
 #define INVENTORY_SPACE 10 // don't go past like.... 100?
 
 #define ENEMY_SIGHT 10
-#define ENEMY_SPEED 0.5
+#define ENEMY_SPEED .5
+#define ENEMY_DAMAGE 20. // damager per second.
