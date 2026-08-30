@@ -31,23 +31,44 @@ void main(){
 
     vec2 uv = gl_FragCoord.xy / ScreenSize.y;
 
-    float slotSize = (1.0/INVENTORY_SPACE);
-    float radius = (1.0/INVENTORY_SPACE) * 0.4;
-    int index = int(texCoord.y * INVENTORY_SPACE);
-    float dist = sdfCircle(0.01+radius, (slotSize/2.)+(slotSize * index), uv);
-    if(dist < radius) {
-        ivec2 pointer = decodePointer(getData(DataSampler, PLAYER_DATA_ROW, INVENTORY_POINTER_INDEX + index));
-        if(pointer != ivec2(-1, -1)) {
-            fragColor = getData(DataSampler, pointer.y, pointer.x);
-            return;
+
+    if(texCoord.x < 0.5) {
+        float slotSize = (1.0/INVENTORY_SPACE);
+        float radius = (1.0/INVENTORY_SPACE) * 0.4;
+        int index = int(texCoord.y * INVENTORY_SPACE);
+        float dist = sdfCircle(0.01+radius, (slotSize/2.)+(slotSize * index), uv);
+        if(dist < radius) {
+            ivec2 pointer = decodePointer(getData(DataSampler, PLAYER_DATA_ROW, INVENTORY_POINTER_INDEX + index));
+            if(pointer != ivec2(-1, -1)) {
+                fragColor = getData(DataSampler, pointer.y, pointer.x);
+                return;
+                
+            } else {
+                if(dist > radius-.005) {
+                    fragColor = vec4(1.);
+                    return;
+                }
+            }
             
-        } else {
-            if(dist > radius-.005) {
-                fragColor = vec4(1.);
+        }
+    } else {
+        float paddingY = 0.05;
+        float paddingX = paddingY * (ScreenSize.y/ScreenSize.x);
+        if(texCoord.x > 0.7 - paddingX && texCoord.x < 1.0- paddingX) {
+            if(texCoord.y > 0.98 - paddingY && texCoord.y < 1.0- paddingY) {
+                float pos = texCoord.x - (0.7 - paddingX);
+                pos /= 0.3;
+                pos *= 100;
+                float health = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_HEALTH_INDEX));
+                if(health >= pos) {
+                    fragColor = vec4(1.0);
+                } else {
+                    fragColor = vec4(0.2);
+                }
                 return;
             }
+
         }
-        
     }
 
     vec4 overlayColor = texture(OverlaySampler, texCoord);
