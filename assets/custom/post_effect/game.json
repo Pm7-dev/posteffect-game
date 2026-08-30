@@ -34,6 +34,28 @@
 
         {
             "vertex_shader": "minecraft:core/screenquad",
+            "fragment_shader": "custom:post/game/update_enemies",
+            "inputs": [
+                {
+                    "sampler_name": "Data",
+                    "target": "data"
+                },
+                {
+                    "sampler_name": "Map",
+                    "location": "custom:game/map",
+                    "width": 256,
+                    "height": 256
+                }
+
+            ],
+            "output": "data_swap"
+        },
+        {"vertex_shader": "minecraft:core/screenquad","fragment_shader": "custom:post/util/shortblit","inputs": [{"sampler_name": "In","target": "data_swap"}],"output": "data"},
+
+        
+
+        {
+            "vertex_shader": "minecraft:core/screenquad",
             "fragment_shader": "custom:post/game/update_keys",
             "inputs": [
                 {
@@ -141,7 +163,7 @@
 
         {
             "vertex_shader": "minecraft:core/screenquad",
-            "fragment_shader": "custom:post/game/render_keys",
+            "fragment_shader": "custom:post/game/render_entities",
             "inputs": [
                 {
                     "sampler_name": "Data",
@@ -156,10 +178,18 @@
                     "location": "custom:game/key_atlas",
                     "width": 256,
                     "height": 128
+                },
+                {
+                    "sampler_name": "Enemy",
+                    "location": "custom:game/enemy",
+                    "width": 64,
+                    "height": 64
                 }
             ],
             "output": "render_swap"
         },
+
+
 
         {
             "vertex_shader": "minecraft:core/screenquad",
@@ -191,9 +221,28 @@
 
 
 
+        {
+            "vertex_shader": "minecraft:core/screenquad",
+            "fragment_shader": "custom:post/util/debug",
+            "inputs": [
+                {
+                    "sampler_name": "Minecraft",
+                    "target": "minecraft:main"
+                },
+                {
+                    "sampler_name": "Data",
+                    "target": "data"
+                }
+            ],
+            "output": "render_swap"
+        },
+        {"vertex_shader": "minecraft:core/screenquad","fragment_shader": "custom:post/util/shortblit","inputs": [{"sampler_name": "In","target": "render_swap"}],"output": "minecraft:main"},
 
 
 
+
+
+        
 
 
 

@@ -14,6 +14,12 @@ out vec4 fragColor;
 void main(){
     ivec2 dataCoord = getDataCoords(texCoord);
 
+    // I have no clue why this has to be here. If you in the future are reading this and can figure out how the heck the key update pass is affecting the enemy data, I applaud you.
+    if(dataCoord.y >= ENEMY_ROW && dataCoord.y < ENEMY_ROW+5) {
+        fragColor = texture(DataSampler, texCoord);
+        return;
+    }
+
     // Load key locations from map image
     if(dataCoord.y == KEY_ROW) { // KEY_ROW stores location, while KEY_ROW+1 stores color
 

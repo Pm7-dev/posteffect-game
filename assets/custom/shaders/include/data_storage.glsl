@@ -1,6 +1,7 @@
 #version 330
 
 #moj_import <custom:game_globals.glsl>
+#moj_import <minecraft:globals.glsl>
 
 // Data Storage Layout for rows and idexes.
 #define GAME_META_ROW 0 // One row for game metadata 
@@ -24,11 +25,12 @@
 #define MAP_DATA_ROW 2 // 128 rows for storing the map data
 
 #define KEY_ROW 130 // 4 rows for storing item pickup information (mapCoord [ivec2], color [vec4], relativeRot [float], and relativeDist [float])
-#define KEYS_LOADED_INDEX MEMORY_PAGE_SIZE-1 // 1.0 if keys have been loaded from the map image, 0.0 if not
+#define KEYS_LOADED_INDEX MEMORY_PAGE_SIZE-3 // 1.0 if keys have been loaded from the map image, 0.0 if not
 
 #define RAYCAST_ROW 134 // 12 rows for storing raycast hit locations (x [float], y [float], and color [vec4])
 
-#define ENEMY_ROW 146 // 5 rows for storing enemy information (x [float], y [float], speed [float], sight [float])
+#define ENEMY_ROW 146 // 5 rows for storing enemy information (originalLoc [ivec2], x [float], y [float], rotation [float], and relativeDist [float])
+#define ENEMIES_LOADED_INDEX MEMORY_PAGE_SIZE-2 // 1.0 if keys have been loaded from the map image, 0.0 if not
 
 
 
@@ -41,7 +43,7 @@
 #define WALL_WIN ivec4(255, 255, 0, 255) // yellow win wall
 #define WALL_DOOR ivec4(0, 0, 0, 255) // Anything else with this opacity will be seen as a door.
 // Anything with opacity 150 will be seen as a key.
-//TODO: enemy types
+#define ENEMY_COLOR ivec4(255, 0, 0, 100) // color on map pinge for enemies
 ivec4 getIntegerColor(vec4 color) { // returns a color as an ivec4 with range 0-255
     return ivec4(int(round(color.r*255.0)), int(round(color.g*255.0)), int(round(color.b*255.0)), int(round(color.a*255.0)));
 }
@@ -104,29 +106,33 @@ float decodeFloat(vec4 rgba) {
     return intBitsToFloat(bits);
 }
 
-// Encodes an ivec2 into four float rgba values
+// Encodes an ivec2 into four float rgba values.
+// A fully zero pixel is reserved as the invalid sentinel and decodes to (-1, -1).
 vec4 encodeMapCoord(ivec2 coord) {
-    int x = coord.x+1;
-    int y = coord.y+1;
-    int signX = (x & 0x80000000) >> 31;
-    int bitsX = (signX << 15) | (x & 0x7FFF);
-    int signY = (y & 0x80000000) >> 31;
-    int bitsY = (signY << 15) | (y & 0x7FFF);
-    int bits = (bitsX << 16) | bitsY;
+    if (coord == ivec2(-1, -1)) {
+        return vec4(0.0);
+    }
+
+    // Reserve 0 as invalid, so offset valid coords by +1.
+    int x = coord.x + 1;
+    int y = coord.y + 1;
+
+    // Pack into 16 bits each, leaving 0x00000000 reserved as the sentinel.
+    int bits = ((x & 0xFFFF) << 16) | (y & 0xFFFF);
     return splitToRGBA(bits);
 }
 
 // Decodes an ivec2 from four float rgba values.
 ivec2 decodeMapCoord(vec4 rgba) {
-    int bits = combineToBits(rgba);
-    int x = (bits >> 16) & 0x7FFF;
-    int signX = (bits & 0x80000000);
-    int y = bits & 0x7FFF;
-    int signY = bits & 0x8000;
+    if (rgba == vec4(0.0)) {
+        return ivec2(-1, -1);
+    }
 
-    x |= (signX << 31);
-    y |= (signY << 31);
-    return ivec2(x-1, y-1);
+    int bits = combineToBits(rgba);
+    int x = (bits >> 16) & 0xFFFF;
+    int y = bits & 0xFFFF;
+
+    return ivec2(x - 1, y - 1);
 }
 
 // alternate names
@@ -163,15 +169,14 @@ ivec2 getDataCoords(vec2 texCoord) {
     return ivec2(column, row);
 }
 ivec2 translateMapCoordToDataCoord(ivec2 mapCoord) {
-    mapCoord.y += MAP_DATA_ROW;
     if(mapCoord.y%2==1) {
         mapCoord.x+=MAP_SIZE; 
     }
-    mapCoord.y /= 2;
+    mapCoord.y = mapCoord.y/2 + MAP_DATA_ROW;
     return mapCoord;
 }
 ivec2 translateDataCoordToMapCoord(ivec2 dataCoord) {
-    dataCoord.y *= 2;
+    dataCoord.y = (dataCoord.y - MAP_DATA_ROW) * 2;
     if(dataCoord.x >= MAP_SIZE) {
         dataCoord.x -= MAP_SIZE;
         dataCoord.y += 1;
@@ -187,4 +192,19 @@ vec4 getMapData(sampler2D MapSampler, int index) {
     int row = index/MAP_SIZE;
     int column = index%MAP_SIZE;
     return getMapData(MapSampler, row, column);
+}
+
+
+
+
+
+
+
+float getDeltaTime(sampler2D DataSampler) {
+    float lastGameTime = decodeFloat(getData(DataSampler, GAME_META_ROW, LAST_GAME_TIME_INDEX));
+    float delta = GameTime - lastGameTime; // Change in GameTime since the last frame update
+    while(delta < 0) delta += 1.0; // if GameTime loops back to 0, prevent the animation from going back.
+    float deltaTime = delta * 1200.0; // 1 GameTime is 20 minutes, which is 1200 seconds
+    if(deltaTime > 0.15) deltaTime = 0.15; // Cap deltaTime to prevent large jumps in time
+    return deltaTime;
 }

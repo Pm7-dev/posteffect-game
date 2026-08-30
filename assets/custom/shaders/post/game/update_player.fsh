@@ -13,12 +13,8 @@ in vec2 texCoord;
 out vec4 fragColor;
 
 void main(){
-    float lastGameTime = decodeFloat(getData(DataSampler, GAME_META_ROW, LAST_GAME_TIME_INDEX));
-    float delta = GameTime - lastGameTime; // Change in GameTime since the last frame update
-    if(delta < 0) delta += 1.0; // if GameTime loops back to 0, prevent the animation from going back.
-    float deltaTime = delta * 1200.0; // 1 GameTime is 20 minutes, which is 1200 seconds
-    if(deltaTime > 0.15) deltaTime = 0.15; // Cap deltaTime to prevent large jumps in time
-
+    float deltaTime = getDeltaTime(DataSampler);
+    
     ivec2 dataCoord = getDataCoords(texCoord);
 
     int initialized = int(decodeFloat(getData(DataSampler, GAME_META_ROW, GAME_INITIALIZED_INDEX)));
@@ -26,7 +22,7 @@ void main(){
 
         // Remove the pixel that determines where the player spawns.
         if(dataCoord.y != PLAYER_DATA_ROW) {
-            if(dataCoord.y > MAP_DATA_ROW && dataCoord.y < MAP_DATA_ROW + 128) {
+            if(dataCoord.y >= MAP_DATA_ROW && dataCoord.y < MAP_DATA_ROW + 128) {
                 int index = getIndex(texCoord) - MAP_DATA_ROW * MEMORY_PAGE_SIZE;
                 vec4 color = getMapData(MapSampler, index);
                 ivec4 icolor = getIntegerColor(color);
@@ -66,7 +62,7 @@ void main(){
                 if(dataCoord.x == PLAYER_X_INDEX) {
                     fragColor = encodeFloat(float(foundX) + 0.5);
                 } else {
-                    fragColor = encodeFloat(float(foundY+2) + 0.5); // genuinely no clue why this must be +2 and that's scary
+                    fragColor = encodeFloat(float(foundY) + 0.5);
                 }
             } else {
                 // fallback to center of the map if nothing found or search capped

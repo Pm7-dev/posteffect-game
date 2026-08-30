@@ -8,6 +8,7 @@
 uniform sampler2D DataSampler;
 uniform sampler2D MinecraftSampler;
 uniform sampler2D KeySampler;
+uniform sampler2D EnemySampler;
 
 in vec2 texCoord;
 
@@ -31,7 +32,7 @@ vec3 hsv2rgb(vec3 c)
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-vec2 getAnimationOffset() {
+vec2 getKeyAnimationFrame() {
     int frame = int(round(GameTime * 14000)) % 8;
     if(frame < 4) {
         return vec2(frame * 0.25, 0.0);
@@ -58,8 +59,9 @@ void main(){
     float closestDistance = 0.0;
     vec4 color = vec4(0.0);
 
-    vec2 currentAnimationOffset = getAnimationOffset();
+    vec2 keyAnimationFrame = getKeyAnimationFrame();
 
+    // Search for any keys that might be in the player's view
     for(int i=0; i<KEYS_LOADED_INDEX; i++) {
 
         ivec2 mapCoord = decodeMapCoord(getData(DataSampler, KEY_ROW, i));
@@ -87,7 +89,7 @@ void main(){
                 continue;
             }
 
-            vec4 keyColor = texture(KeySampler, vec2(texX, texY) + currentAnimationOffset);
+            vec4 keyColor = texture(KeySampler, vec2(texX, texY) + keyAnimationFrame);
 
             if(keyColor.a == 0.0) {
                 continue;
@@ -104,6 +106,49 @@ void main(){
             found = true;
             closestDistance = dist;
             color = keyColor;
+        }
+
+    }
+
+
+    // Search for any enemies that might by in the player's view
+    for(int i=0; i<ENEMIES_LOADED_INDEX; i++) {
+
+        // technically the enemy's spawn position, but good for checking if the enemy exists at all
+        ivec2 mapCoord = decodeMapCoord(getData(DataSampler, ENEMY_ROW, i));
+        if(mapCoord == ivec2(-1, -1)) {
+            break;
+        }
+        
+        float dist = decodeFloat(getData(DataSampler, ENEMY_ROW+4, i)) * cos(rotOffset);
+        if(dist > MAX_SIGHT || dist > fixedDist || dist <= 0.05) {
+            continue;
+        }
+
+        float relativeAngle = decodeFloat(getData(DataSampler, ENEMY_ROW+3, i));
+        float rotDist = mod(relativeAngle - playerRot - rotOffset + PI, 2*PI) - PI;
+        float enemySize = (1.0/(dist));
+        if(abs(rotDist) < enemySize/2) {
+            float texX = 1-((rotDist + enemySize/2) / enemySize);
+            float texY = (((1.0-texCoord.y)-0.5)/enemySize + 0.5);
+
+            if(abs(texCoord.y-0.5)*2.0 > enemySize) {
+                continue;
+            }
+
+            if(found && dist > closestDistance) {
+                continue;
+            }
+
+            vec4 enemyColor = texture(EnemySampler, vec2(texX, texY));
+
+            if(enemyColor.a == 0.0) {
+                continue;
+            }
+            
+            found = true;
+            closestDistance = dist;
+            color = enemyColor;
         }
 
     }
