@@ -8,8 +8,7 @@ This mainly works via minecraft's ability to support "persistent render targets,
 
 # Setup
 
-NOTE: This game is **ONLY** fully tested on Minecraft Java version **26.3 Snapshot 3**.  
-it **MAY** work on other versions, but if you encounter issues I will probably not be fixing them.
+NOTE: This uses niche resource pack features that are not officially "supported" by mojang. This game is **ONLY** fully tested on Minecraft Java version **26.3 Snapshot 3**. it **MAY** work on future versions, but if you encounter issues I will probably not be fixing them.
 
 NOTE 2: This may not work on all GPUs. In development I came across a situation in which the code ran fine on my laptop's dedicated GPU but crashed on the integrated graphics. Everything works fine on all the GPUs I can test now, but please report an issue if your hardware does not work with this. I'd like to be able to fix all hardware compatability issues since being locked out of a thing is not fun at all, but I am also by no means a professional in rendering hardware so I may not be able to figure it out.
 
