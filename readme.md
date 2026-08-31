@@ -14,11 +14,11 @@ NOTE: This uses niche resource pack features that are not officially "supported"
 
 NOTE 2: This may not work on all GPUs. In development I came across a situation in which the code ran fine on my laptop's dedicated GPU but crashed on the integrated graphics. Everything works fine on all the GPUs I can test now, but please report an issue if your hardware does not work with this. I'd like to be able to fix all hardware compatability issues since being locked out of a thing is not fun at all, but I am also by no means a professional in rendering hardware so I may not be able to figure it out.
 
-To set up, first download both the resource pack and the datapack from [the releases page](https://github.com/Pm7-dev/posteffect-game/releases). Apply the resource pack to your client ([tutorial](https://minecraft.wiki/w/Tutorial:Loading_a_resource_pack)), and add the datapack to a world with cheats enabled ([tutorial](https://minecraft.wiki/w/Tutorial:Importing_a_data_pack)).
+To set up, first download both the resource pack and the datapack from [the latest release](https://github.com/Pm7-dev/posteffect-game/releases/latest). Apply the resource pack to your client ([tutorial](https://minecraft.wiki/w/Tutorial:Loading_a_resource_pack)), and add the datapack to a world with cheats enabled ([tutorial](https://minecraft.wiki/w/Tutorial:Importing_a_data_pack)).
 
 To start the game, run the command `/function game:setup` while standing on the ground in a spot with at least three blocks of space around you on all sides. You should now see the starting spot and be able to control the game with your movement keys and space bar.
 
-**IMPORTANT:** Running the setup command will put you in spectator and mount you to an armor stand. If you press your crouch button you will dismount and the game will break. If you accidentally do this, run `/function game:exit`
+**IMPORTANT:** Running the setup command will put you in spectator and mount you to an armor stand. If you press your crouch button you will dismount the armor stand and the game will break. If you accidentally do this, run `/function game:exit` to get your view back.
 
 To exit the game, run the command `/function game:exit`
 
