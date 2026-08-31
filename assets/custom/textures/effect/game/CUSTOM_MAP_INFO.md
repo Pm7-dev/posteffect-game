@@ -9,6 +9,8 @@ Colors with an alpha of 255 are considered walls. There are only four defined wa
 - (85, 35, 17, 255)    [552311FF]  Wood
 - (134, 136, 136, 255)  [868888FF]  Stone
 - (107, 76, 62, 255)  [6B4C3EFF]  Brick
+-
+There is also the color (255, 255, 0, 255) [FFFF00FF] used to denote the winning wall. When the player touches a wall of this color the game will end and they will be shown the win screen. Additionally, there is a secret ending wall denoted by the color (250, 255, 0, 255) [FAFF00FF] which functions exactly the same but shows the secret ending screen instead. 
 
 Any other color with opacity 255 will be considered a Door. Doors use the last texture in the bottom right of the wall_atlas.png, and are hue shifted to match the color that you placed down. This means that you should try to use visually distinct, high-saturation colors for doors.
 

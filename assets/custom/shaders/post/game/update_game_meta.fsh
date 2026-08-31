@@ -56,6 +56,10 @@ void main(){
                 fragColor = encodeFloat(1.0);
                 return;
             }
+            if(closeEnoughRGBA(color, WALL_WIN_ALT)) {
+                fragColor = encodeFloat(3.0);
+                return;
+            }
         }
         if(xDist > 0) {
             hitCoord = translateMapCoordToDataCoord(ivec2(int(x + 1), int(y)));

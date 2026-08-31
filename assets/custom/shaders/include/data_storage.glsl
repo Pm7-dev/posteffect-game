@@ -42,6 +42,7 @@
 #define WALL_STONE ivec4(134, 136, 136, 255)
 #define WALL_DIRT ivec4(107, 76, 62, 255)
 #define WALL_WIN ivec4(255, 255, 0, 255) // yellow win wall
+#define WALL_WIN_ALT ivec4(250, 255, 0, 255) // secret ending
 #define WALL_DOOR ivec4(0, 0, 0, 255) // Anything else with this opacity will be seen as a door.
 // Anything with opacity 150 will be seen as a key.
 #define ENEMY_COLOR ivec4(255, 0, 0, 100) // color on map pinge for enemies

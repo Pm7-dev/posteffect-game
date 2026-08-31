@@ -214,6 +214,12 @@
                     "location": "custom:game/lose_screen",
                     "width": 160,
                     "height": 90
+                },
+                {
+                    "sampler_name": "SecretScreen",
+                    "location": "custom:game/secret_screen",
+                    "width": 160,
+                    "height": 90
                 }
             ],
             "output": "minecraft:main"
