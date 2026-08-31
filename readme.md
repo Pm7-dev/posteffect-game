@@ -2,11 +2,15 @@
 
 A "but what if I...." idea I had that turned into a 50+ hour painful journey to rediscover rendering methods that were already solved more than 30 years ago, except all running in a fragment shader pipeline.
 
+This is not a mod! This is made entirely in vanilla Minecraft using a resource pack and a datapack.
+
 This mainly works via minecraft's ability to support "persistent render targets," which means that I can define a custom render target that a shader can write to/read from which doesn't affect the main game's rendering. Through this, I was able to create a sort of program memory page with a row/column addressing system, as long as I convert all the data types into colors and then back.
 
 # Setup
 
-NOTE: This game is **ONLY** fully tested on Minecraft Java version **26.3 Snapshot 3** it **MAY** work on other versions, but if you encounter issues I will probably not be fixing them.
+NOTE 1: This game uses HIGHLY experiemental features that aren't even considered "supported" by Mojang. It is **ONLY** fully tested on the very specific Minecraft Java version **26.3 Snapshot 3** it **MAY** work on other versions, but if you encounter issues I will probably not be fixing them.
+
+NOTE 2: This may not work on all GPUs. In development I came across a situation in which the code ran fine on my laptop's dedicated GPU but crashed on the integrated graphics. Everything works fine on all the GPUs I can test now, but please report an issue if your hardware does not work with this. I'd like to be able to fix all hardware compatability issues since being locked out of a thing is not fun at all, but I am also by no means a professional in rendering hardware so I may not be able to figure it out.
 
 To set up, first download both the resource pack and the datapack from [the releases page](https://github.com/Pm7-dev/posteffect-game/releases). Apply the resource pack to your client ([tutorial](https://minecraft.wiki/w/Tutorial:Loading_a_resource_pack)), and add the datapack to a world with cheats enabled ([tutorial](https://minecraft.wiki/w/Tutorial:Importing_a_data_pack)).
 
