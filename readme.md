@@ -6,6 +6,8 @@ This is not a mod! This is made entirely in vanilla Minecraft using a resource p
 
 This mainly works via minecraft's ability to support "persistent render targets," which means that I can define a custom render target that a shader can write to/read from which doesn't affect the main game's rendering. Through this, I was able to create a sort of program memory page with a row/column addressing system, as long as I convert all the data types into colors and then back.
 
+# Demonstration Video
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/IXZsasVcYCE/0.jpg)](https://www.youtube.com/watch?v=IXZsasVcYCE)
 # Setup
 
 NOTE: This uses niche resource pack features that are not officially "supported" by mojang. This game is **ONLY** fully tested on Minecraft Java version **26.3 Snapshot 3**. it **MAY** work on future versions, but if you encounter issues I will probably not be fixing them.
@@ -15,6 +17,8 @@ NOTE 2: This may not work on all GPUs. In development I came across a situation 
 To set up, first download both the resource pack and the datapack from [the releases page](https://github.com/Pm7-dev/posteffect-game/releases). Apply the resource pack to your client ([tutorial](https://minecraft.wiki/w/Tutorial:Loading_a_resource_pack)), and add the datapack to a world with cheats enabled ([tutorial](https://minecraft.wiki/w/Tutorial:Importing_a_data_pack)).
 
 To start the game, run the command `/function game:setup` while standing on the ground in a spot with at least three blocks of space around you on all sides. You should now see the starting spot and be able to control the game with your movement keys and space bar.
+
+**IMPORTANT:** Running the setup command will put you in spectator and mount you to an armor stand. If you press your crouch button you will dismount and the game will break. If you accidentally do this, run `/function game:exit`
 
 To exit the game, run the command `/function game:exit`
 
