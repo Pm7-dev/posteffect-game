@@ -6,7 +6,8 @@ This mainly works via minecraft's ability to support "persistent render targets,
 
 # Setup
 
-NOTE: This game is **ONLY** fully tested on Minecraft Java version **26.3 Snapshot 3** it **MAY** work on other versions, but if you encounter issues I will probably not be fixing them.
+NOTE: This game is **ONLY** fully tested on Minecraft Java version **26.3 Snapshot 3**.  
+it **MAY** work on other versions, but if you encounter issues I will probably not be fixing them.
 
 To set up, first download both the resource pack and the datapack from [the releases page](https://github.com/Pm7-dev/posteffect-game/releases). Apply the resource pack to your client ([tutorial](https://minecraft.wiki/w/Tutorial:Loading_a_resource_pack)), and add the datapack to a world with cheats enabled ([tutorial](https://minecraft.wiki/w/Tutorial:Importing_a_data_pack)).
 
