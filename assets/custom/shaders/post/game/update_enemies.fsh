@@ -101,14 +101,11 @@ void main(){
         float currentY = decodeFloat(getData(DataSampler, ENEMY_ROW+2, dataCoord.x));
 
         float deltaTime = getDeltaTime(DataSampler);
-        float playerX = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_X_INDEX));
-        float playerY = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX));
-        vec2 toPlayer = vec2(playerX - currentX, playerY - currentY);
-        float distanceToPlayer = length(toPlayer);
-        float movementDistance = min(ENEMY_SPEED * deltaTime, max(distanceToPlayer - (HITBOX_RADIUS-0.01), 0.0));
-        float idealMovement = distanceToPlayer > 0.0 ? movementDistance * toPlayer.x / distanceToPlayer : 0.0;
+        float distanceToPlayer = decodeFloat(getData(DataSampler, ENEMY_ROW+4, dataCoord.x));
+        float rotation = decodeFloat(getData(DataSampler, ENEMY_ROW+3, dataCoord.x));
+        float idealMovement = distanceToPlayer > HITBOX_RADIUS ? -cos(rotation) * ENEMY_SPEED * deltaTime : 0.0;
 
-        ivec2 hitCoord = translateMapCoordToDataCoord(ivec2(int(currentX + idealMovement), int(currentY)));
+        ivec2 hitCoord = translateMapCoordToDataCoord(ivec2(int(currentX + idealMovement + (HITBOX_RADIUS*1.1*sign(idealMovement))), int(currentY)));
         ivec4 color = getIntegerColor(getData(DataSampler, hitCoord.y, hitCoord.x));
         if(color.a == WALL_DOOR.a) { 
             if(sign(idealMovement) > 0.0) {
@@ -142,20 +139,17 @@ void main(){
             return;
         }
 
-        float currentY = decodeFloat(getData(DataSampler, ENEMY_ROW+2, dataCoord.x));
         float currentX = decodeFloat(getData(DataSampler, ENEMY_ROW+1, dataCoord.x));
+        float currentY = decodeFloat(getData(DataSampler, ENEMY_ROW+2, dataCoord.x));
 
         float deltaTime = getDeltaTime(DataSampler);
-        float playerX = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_X_INDEX));
-        float playerY = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_Y_INDEX));
-        vec2 toPlayer = vec2(playerX - currentX, playerY - currentY);
-        float distanceToPlayer = length(toPlayer);
-        float movementDistance = min(ENEMY_SPEED * deltaTime, max(distanceToPlayer - (HITBOX_RADIUS-0.01), 0.0));
-        float idealMovement = distanceToPlayer > 0.0 ? movementDistance * toPlayer.y / distanceToPlayer : 0.0;
+        float distanceToPlayer = decodeFloat(getData(DataSampler, ENEMY_ROW+4, dataCoord.x));
+        float rotation = decodeFloat(getData(DataSampler, ENEMY_ROW+3, dataCoord.x));
+        float idealMovement = distanceToPlayer > HITBOX_RADIUS ? -sin(rotation) * ENEMY_SPEED * deltaTime : 0.0;
 
-        ivec2 hitCoord = translateMapCoordToDataCoord(ivec2(int(currentX ), int(currentY+idealMovement)));
+        ivec2 hitCoord = translateMapCoordToDataCoord(ivec2(int(currentX), int(currentY + idealMovement + (HITBOX_RADIUS*1.1*sign(idealMovement)))));
         ivec4 color = getIntegerColor(getData(DataSampler, hitCoord.y, hitCoord.x));
-        if(color.a == WALL_DOOR.a) {
+        if(color.a == WALL_DOOR.a) { 
             if(sign(idealMovement) > 0.0) {
                 currentY = int(currentY) + 1.0 - HITBOX_RADIUS;
             } else {

@@ -82,6 +82,11 @@ void main(){
             fragColor = encodeFloat(100.0);
             return;
         }
+
+        if(dataCoord.x == DAMAGE_DEBOUNCE) {
+            fragColor = encodeFloat(0.0);
+            return;
+        }
     }
 
     float health = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, PLAYER_HEALTH_INDEX));
@@ -138,6 +143,11 @@ void main(){
         return;
     }
     if(dataCoord.x == PLAYER_HEALTH_INDEX) {
+        float damageDebounce = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, DAMAGE_DEBOUNCE_INDEX));
+        if(damageDebounce > 0) {
+            fragColor = texture(DataSampler, texCoord);
+            return;
+        }
         // search through enemy data row to check for damage
         for(int i=0; i<ENEMIES_LOADED_INDEX; i++) {
             ivec2 origin = decodeMapCoord(getData(DataSampler, ENEMY_ROW, i));
@@ -146,8 +156,8 @@ void main(){
             }
 
             float dist = decodeFloat(getData(DataSampler, ENEMY_ROW+4, i));
-            if(dist <= HITBOX_RADIUS) {
-                health -= ENEMY_DAMAGE * deltaTime;
+            if(dist <= DAMAGE_RADIUS) {
+                health -= ENEMY_DAMAGE;
             }
 
             if(health <= 0.) {
@@ -158,6 +168,34 @@ void main(){
         }
         fragColor = encodeFloat(health);
         return;
+    }
+    if(dataCoord.x == DAMAGE_DEBOUNCE_INDEX) {
+        float damageDebounce = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, DAMAGE_DEBOUNCE_INDEX));
+        if(damageDebounce > 0) {
+            damageDebounce -= deltaTime;
+            if(damageDebounce < 0) {
+                damageDebounce = 0;
+            }
+            fragColor = encodeFloat(damageDebounce);
+            return;
+        }
+
+        for(int i=0; i<ENEMIES_LOADED_INDEX; i++) {
+            ivec2 origin = decodeMapCoord(getData(DataSampler, ENEMY_ROW, i));
+            if(origin == ivec2(-1, -1)) {
+                break;
+            }
+
+            float dist = decodeFloat(getData(DataSampler, ENEMY_ROW+4, i));
+            if(dist <= DAMAGE_RADIUS) {
+                fragColor = encodeFloat(DAMAGE_DEBOUNCE);
+                return;
+            }
+        }
+
+        fragColor = vec4(0.0);
+        return;
+
     }
     if(dataCoord.x >= INVENTORY_INDEX && dataCoord.x < INVENTORY_POINTER_INDEX) {
         int keysLoaded = int(decodeFloat(getData(DataSampler, KEY_ROW, KEYS_LOADED_INDEX)));

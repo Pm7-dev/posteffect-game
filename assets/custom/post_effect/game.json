@@ -28,7 +28,6 @@
             ],
             "output": "data_swap"
         },
-        {"vertex_shader": "minecraft:core/screenquad","fragment_shader": "custom:post/util/shortblit","inputs": [{"sampler_name": "In","target": "data_swap"}],"output": "data"},
 
 
 
@@ -38,7 +37,7 @@
             "inputs": [
                 {
                     "sampler_name": "Data",
-                    "target": "data"
+                    "target": "data_swap"
                 },
                 {
                     "sampler_name": "Map",
@@ -48,9 +47,8 @@
                 }
 
             ],
-            "output": "data_swap"
+            "output": "data"
         },
-        {"vertex_shader": "minecraft:core/screenquad","fragment_shader": "custom:post/util/shortblit","inputs": [{"sampler_name": "In","target": "data_swap"}],"output": "data"},
 
 
 
@@ -72,7 +70,6 @@
             ],
             "output": "data_swap"
         },
-        {"vertex_shader": "minecraft:core/screenquad","fragment_shader": "custom:post/util/shortblit","inputs": [{"sampler_name": "In","target": "data_swap"}],"output": "data"},
 
 
 
@@ -82,7 +79,7 @@
             "inputs": [
                 {
                     "sampler_name": "Data",
-                    "target": "data"
+                    "target": "data_swap"
                 },
                 {
                     "sampler_name": "Map",
@@ -92,9 +89,8 @@
                 }
 
             ],
-            "output": "data_swap"
+            "output": "data"
         },
-        {"vertex_shader": "minecraft:core/screenquad","fragment_shader": "custom:post/util/shortblit","inputs": [{"sampler_name": "In","target": "data_swap"}],"output": "data"},
 
 
 
@@ -115,7 +111,6 @@
             ],
             "output": "data_swap"
         },
-        {"vertex_shader": "minecraft:core/screenquad","fragment_shader": "custom:post/util/shortblit","inputs": [{"sampler_name": "In","target": "data_swap"}],"output": "data"},
         
 
 
@@ -125,12 +120,11 @@
             "inputs": [
                 {
                     "sampler_name": "Data",
-                    "target": "data"
+                    "target": "data_swap"
                 }
             ],
-            "output": "data_swap"
+            "output": "data"
         },
-        {"vertex_shader": "minecraft:core/screenquad","fragment_shader": "custom:post/util/shortblit","inputs": [{"sampler_name": "In","target": "data_swap"}],"output": "data"},
 
 
 
@@ -224,29 +218,6 @@
             ],
             "output": "minecraft:main"
         },
-
-
-
-        {
-            "vertex_shader": "minecraft:core/screenquad",
-            "fragment_shader": "custom:post/util/debug",
-            "inputs": [
-                {
-                    "sampler_name": "Minecraft",
-                    "target": "minecraft:main"
-                },
-                {
-                    "sampler_name": "Data",
-                    "target": "data"
-                }
-            ],
-            "output": "render_swap"
-        },
-        {"vertex_shader": "minecraft:core/screenquad","fragment_shader": "custom:post/util/shortblit","inputs": [{"sampler_name": "In","target": "render_swap"}],"output": "minecraft:main"},
-
-
-
-
 
         
 

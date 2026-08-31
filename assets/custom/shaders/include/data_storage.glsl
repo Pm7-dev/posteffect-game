@@ -18,9 +18,10 @@
 #define PLAYER_DIRECTION_INDEX 5
 #define COORDS_FACING_INDEX 6 // use the map coordinate thing
 #define LOOKING_AT_WALL_INDEX 7 // either 1.0 or 0.0
-#define PLAYER_HEALTH_INDEX 8 //may go unused
-#define INVENTORY_INDEX 9 // 
-#define INVENTORY_POINTER_INDEX (INVENTORY_INDEX + INVENTORY_SPACE)// An ordered list that points to the 
+#define PLAYER_HEALTH_INDEX 8 // plr health from 0-100
+#define DAMAGE_DEBOUNCE_INDEX 9
+#define INVENTORY_INDEX 10 // inv
+#define INVENTORY_POINTER_INDEX (INVENTORY_INDEX + INVENTORY_SPACE) // An ordered list that points to the inventory indices
 
 #define MAP_DATA_ROW 2 // 128 rows for storing the map data
 
