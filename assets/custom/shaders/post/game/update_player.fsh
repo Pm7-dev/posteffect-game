@@ -204,10 +204,10 @@ void main(){
             return;
         }
 
-        vec4 color = getData(DataSampler, dataCoord.y, dataCoord.x);
+        vec4 color = getData(DataSampler, PLAYER_DATA_ROW, dataCoord.x);
         if(color == vec4(0.0)) {
 
-            // Check to make sure that this is the FIRST open index in the inventory
+            // Exit early if this inventory index is not the first empty slot.
             for(int i=INVENTORY_INDEX; i<dataCoord.x; i++) {
                 vec4 prevColor = getData(DataSampler, PLAYER_DATA_ROW, i);
                 if(prevColor == vec4(0.0)) {
@@ -216,6 +216,7 @@ void main(){
                 }
             }
 
+            // Find the key that is in the pickup radius of the player and add it to the inventory.
             for(int i = 0; i<KEYS_LOADED_INDEX; i++) {
                 vec4 keyColor = getData(DataSampler, KEY_ROW+1, i);
                 if(keyColor == vec4(0.0)) { // when keycolor is 0 it is no longer a key.....
@@ -228,6 +229,39 @@ void main(){
                 }
             }
         }
+    }
+    if(dataCoord.x == INVENTORY_REMOVE_FLAG_INDEX) {
+
+        bool hasEmptySlot = false;
+        for(int i=INVENTORY_INDEX; i<INVENTORY_INDEX + INVENTORY_SPACE; i++) {
+            vec4 color = getData(DataSampler, PLAYER_DATA_ROW, i);
+            if(color == vec4(0.0)) {
+                hasEmptySlot = true;
+                break;
+            }
+        }
+
+        // Only remove a key after a pickup can actually be written.
+        if(!hasEmptySlot) {
+            fragColor = texture(DataSampler, texCoord);
+            return;
+        }
+
+        // If there's a key in the pickup radius, set the flag to 1.0 so the map removes it
+        for(int i = 0; i<KEYS_LOADED_INDEX; i++) {
+            vec4 keyColor = getData(DataSampler, KEY_ROW+1, i);
+            if(keyColor == vec4(0.0)) { // when keycolor is 0 it is no longer a key.....
+                continue;
+            }
+            float dist = decodeFloat(getData(DataSampler, KEY_ROW+3, i));
+            if(dist < PICKUP_RADIUS) {
+                fragColor = encodeFloat(1.0);
+                return;
+            }
+        }
+
+        fragColor = texture(DataSampler, texCoord);
+        return;
     }
     if(dataCoord.x >= INVENTORY_POINTER_INDEX && dataCoord.x < INVENTORY_POINTER_INDEX + INVENTORY_SPACE) {
         int currentPointerIndex = dataCoord.x - INVENTORY_POINTER_INDEX;

@@ -22,6 +22,7 @@
 #define DAMAGE_DEBOUNCE_INDEX 9
 #define INVENTORY_INDEX 10 // inv
 #define INVENTORY_POINTER_INDEX (INVENTORY_INDEX + INVENTORY_SPACE) // An ordered list that points to the inventory indices
+#define INVENTORY_REMOVE_FLAG_INDEX (INVENTORY_POINTER_INDEX + INVENTORY_SPACE) // 1.0 if the inventory has been updated and a key needs to be removed from the map, 0.0 if not
 
 #define MAP_DATA_ROW 2 // 128 rows for storing the map data
 

@@ -20,6 +20,12 @@ void main(){
         return;
     }
 
+    // reset the inventory remove flag to 0
+    if(dataCoord.y == PLAYER_DATA_ROW && dataCoord.x == INVENTORY_REMOVE_FLAG_INDEX) {
+        fragColor = encodeFloat(0.0);
+        return;
+    }
+
     // Load key locations from map image
     if(dataCoord.y == KEY_ROW) { // KEY_ROW stores location, while KEY_ROW+1 stores color
 
@@ -84,12 +90,14 @@ void main(){
         int loaded = int(decodeFloat(getData(DataSampler, KEY_ROW, KEYS_LOADED_INDEX)));
         if(loaded == 1) {
 
-            float dist = decodeFloat(getData(DataSampler, KEY_ROW+3, dataCoord.x));
-            if(dist < PICKUP_RADIUS) {
-                fragColor = vec4(0.0);
-                return;
+            float removeFlag = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, INVENTORY_REMOVE_FLAG_INDEX));
+            if(removeFlag > 0.5) {
+                float dist = decodeFloat(getData(DataSampler, KEY_ROW+3, dataCoord.x));
+                if(dist < PICKUP_RADIUS) {
+                    fragColor = vec4(0.0);
+                    return;
+                }
             }
-            
 
             fragColor = texture(DataSampler, texCoord);
             return;
