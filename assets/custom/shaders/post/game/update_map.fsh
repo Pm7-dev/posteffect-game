@@ -101,7 +101,24 @@ void main(){
         
         fragColor = texture(DataSampler, texCoord);
         return;
-    } 
+    } else {
+        // If data is not initialized, load the map data into the program memory but remove the player spawn point pixel
+        if(dataCoord.y != PLAYER_DATA_ROW) {
+            if(dataCoord.y >= MAP_DATA_ROW && dataCoord.y < MAP_DATA_ROW + 128) {
+                int index = getIndex(texCoord) - MAP_DATA_ROW * MEMORY_PAGE_SIZE;
+                vec4 color = getMapData(MapSampler, index);
+                ivec4 icolor = getIntegerColor(color);
+                if(icolor == PLAYER_SPAWN) {
+                    fragColor = vec4(0.0, 0.0, 0.0, 0.0);
+                } else {
+                    fragColor = color;
+                }
+                return;
+            }
+            fragColor = texture(DataSampler, texCoord);
+            return;
+        }
+    }
 
     fragColor = texture(DataSampler, texCoord);
 }

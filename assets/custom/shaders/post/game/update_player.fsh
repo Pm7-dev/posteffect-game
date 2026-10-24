@@ -20,25 +20,9 @@ void main(){
     int initialized = int(decodeFloat(getData(DataSampler, GAME_META_ROW, GAME_INITIALIZED_INDEX)));
     if(initialized != 1.0) {
 
-        // Remove the pixel that determines where the player spawns.
-        if(dataCoord.y != PLAYER_DATA_ROW) {
-            if(dataCoord.y >= MAP_DATA_ROW && dataCoord.y < MAP_DATA_ROW + 128) {
-                int index = getIndex(texCoord) - MAP_DATA_ROW * MEMORY_PAGE_SIZE;
-                vec4 color = getMapData(MapSampler, index);
-                ivec4 icolor = getIntegerColor(color);
-                if(icolor == PLAYER_SPAWN) {
-                    fragColor = vec4(0.0, 0.0, 0.0, 0.0);
-                } else {
-                    fragColor = color;
-                }
-                return;
-            }
-            fragColor = texture(DataSampler, texCoord);
-            return;
-        }
-
         
-        // Load the player's initial X and Y position from the white pixel.
+        
+        // Load the player's initial X and Y position from the pixel with color PLAYER_SPAWN.
         if(dataCoord.x == PLAYER_X_INDEX || dataCoord.x == PLAYER_Y_INDEX) {
             int found = 0;
             int foundX = 0;
@@ -143,6 +127,14 @@ void main(){
         return;
     }
     if(dataCoord.x == PLAYER_HEALTH_INDEX) {
+
+        //Do not check for damage before enemy data is initialized, since all their distances are zero
+        int enemiesLoaded = int(decodeFloat(getData(DataSampler, ENEMY_ROW, ENEMIES_LOADED_INDEX)));
+        if(enemiesLoaded == 0) {
+            fragColor = encodeFloat(health);
+            return;
+        }
+
         float damageDebounce = decodeFloat(getData(DataSampler, PLAYER_DATA_ROW, DAMAGE_DEBOUNCE_INDEX));
         if(damageDebounce > 0) {
             fragColor = texture(DataSampler, texCoord);
